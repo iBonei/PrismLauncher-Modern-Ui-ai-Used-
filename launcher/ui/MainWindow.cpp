@@ -430,6 +430,12 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
         detailsTitle->setObjectName(QStringLiteral("modernDetailsTitle"));
         detailsLayout->addWidget(detailsTitle);
 
+        m_modernInstanceIcon = new QLabel(details);
+        m_modernInstanceIcon->setObjectName(QStringLiteral("modernInstanceIcon"));
+        m_modernInstanceIcon->setAlignment(Qt::AlignCenter);
+        m_modernInstanceIcon->setFixedSize(96, 96);
+        detailsLayout->addWidget(m_modernInstanceIcon, 0, Qt::AlignHCenter);
+
         m_modernInstanceName = new QLabel(tr("No instance selected"), details);
         m_modernInstanceName->setObjectName(QStringLiteral("modernInstanceName"));
         m_modernInstanceName->setWordWrap(true);
@@ -439,6 +445,11 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
         m_modernInstanceStatus->setObjectName(QStringLiteral("modernInstanceStatus"));
         m_modernInstanceStatus->setWordWrap(true);
         detailsLayout->addWidget(m_modernInstanceStatus);
+
+        m_modernInstanceMeta = new QLabel(tr("No details available"), details);
+        m_modernInstanceMeta->setObjectName(QStringLiteral("modernInstanceMeta"));
+        m_modernInstanceMeta->setWordWrap(true);
+        detailsLayout->addWidget(m_modernInstanceMeta);
         detailsLayout->addSpacing(8);
 
         auto makeDetailsButton = [details](QAction* action, const QString& objectName) {
@@ -1858,6 +1869,23 @@ void MainWindow::instanceChanged(const QModelIndex& current, [[maybe_unused]] co
             m_modernInstanceName->setText(m_selectedInstance->name());
         if (m_modernInstanceStatus)
             m_modernInstanceStatus->setText(m_selectedInstance->getStatusbarDescription());
+        if (m_modernInstanceIcon)
+            m_modernInstanceIcon->setPixmap(APPLICATION->icons()->getIcon(m_selectedInstance->iconKey()).pixmap(88, 88));
+        if (m_modernInstanceMeta) {
+            QStringList metaLines;
+            const QString packVersion = m_selectedInstance->getManagedPackVersionName();
+            if (!packVersion.isEmpty())
+                metaLines << tr("Pack version: %1").arg(packVersion);
+
+            const int64_t played = m_selectedInstance->totalTimePlayed();
+            if (played > 0)
+                metaLines << tr("Playtime: %1").arg(Time::prettifyDuration(
+                    played, APPLICATION->settings()->get("ShowGameTimeWithoutDays").toBool()));
+            else
+                metaLines << tr("Playtime: Not played yet");
+
+            m_modernInstanceMeta->setText(metaLines.join("\n"));
+        }
         updateStatusCenter();
         updateInstanceToolIcon(m_selectedInstance->iconKey());
 
@@ -1897,6 +1925,10 @@ void MainWindow::selectionBad()
         m_modernInstanceName->setText(tr("No instance selected"));
     if (m_modernInstanceStatus)
         m_modernInstanceStatus->setText(tr("Choose an instance to see its actions."));
+    if (m_modernInstanceIcon)
+        m_modernInstanceIcon->clear();
+    if (m_modernInstanceMeta)
+        m_modernInstanceMeta->setText(tr("No details available"));
 
     statusBar()->clearMessage();
     ui->instanceToolBar->setEnabled(false);
