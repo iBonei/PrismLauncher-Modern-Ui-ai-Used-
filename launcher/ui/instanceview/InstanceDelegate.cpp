@@ -113,23 +113,6 @@ void drawBadges(QPainter* painter, const QStyleOptionViewItem& option, BaseInsta
     painter->translate(-option.rect.topLeft());
 }
 
-static QSize viewItemTextSize(const QStyleOptionViewItem* option)
-{
-    QStyle* style = option->widget ? option->widget->style() : QApplication::style();
-    QTextOption textOption;
-    textOption.setWrapMode(QTextOption::WrapAtWordBoundaryOrAnywhere);
-    QTextLayout textLayout;
-    textLayout.setTextOption(textOption);
-    textLayout.setFont(option->font);
-    textLayout.setText(option->text);
-    const int textMargin = style->pixelMetric(QStyle::PM_FocusFrameHMargin, option, option->widget) + 1;
-    QRect bounds(0, 0, 100 - 2 * textMargin, 600);
-    qreal height = 0, widthUsed = 0;
-    viewItemTextLayout(textLayout, bounds.width(), height, widthUsed);
-    const QSize size(qCeil(widthUsed), qCeil(height));
-    return QSize(size.width() + 2 * textMargin, size.height());
-}
-
 void ListViewDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
     QStyleOptionViewItem opt = option;
