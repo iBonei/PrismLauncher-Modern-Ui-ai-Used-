@@ -61,6 +61,8 @@
 #include <QInputDialog>
 #include <QKeyEvent>
 #include <QLabel>
+#include <QLineEdit>
+#include <QFrame>
 #include <QMainWindow>
 #include <QMenu>
 #include <QMenuBar>
@@ -70,6 +72,7 @@
 #include <QStatusBar>
 #include <QToolBar>
 #include <QToolButton>
+#include <QVBoxLayout>
 #include <QWidget>
 #include <QWidgetAction>
 #include <memory>
@@ -241,6 +244,90 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     updateThemeMenu();
     updateMainToolBar();
+
+    // Modern redesign shell. Keep Prism's existing actions and backend, but
+    // present the main window with a navigation sidebar and content header.
+    ui->mainToolBar->setVisible(false);
+
+    auto sidebar = new QFrame(ui->centralWidget);
+    sidebar->setObjectName(QStringLiteral("modernSidebar"));
+    sidebar->setMinimumWidth(176);
+    sidebar->setMaximumWidth(196);
+
+    auto sidebarLayout = new QVBoxLayout(sidebar);
+    sidebarLayout->setContentsMargins(14, 18, 14, 14);
+    sidebarLayout->setSpacing(7);
+
+    auto brand = new QLabel(tr("Prism Launcher"), sidebar);
+    brand->setObjectName(QStringLiteral("modernBrand"));
+    sidebarLayout->addWidget(brand);
+    sidebarLayout->addSpacing(12);
+
+    auto makeSidebarButton = [sidebar](QAction* action, const QString& text) {
+        auto button = new QToolButton(sidebar);
+        button->setObjectName(QStringLiteral("modernNavButton"));
+        button->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+        button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+        button->setMinimumHeight(40);
+        button->setIcon(action->icon());
+        button->setText(text);
+        QObject::connect(button, &QToolButton::clicked, action, &QAction::trigger);
+        return button;
+    };
+
+    auto instancesButton = new QToolButton(sidebar);
+    instancesButton->setObjectName(QStringLiteral("modernNavButton"));
+    instancesButton->setProperty("active", true);
+    instancesButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    instancesButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    instancesButton->setMinimumHeight(40);
+    instancesButton->setIcon(QIcon::fromTheme("view-grid"));
+    instancesButton->setText(tr("Instances"));
+    sidebarLayout->addWidget(instancesButton);
+
+    sidebarLayout->addWidget(makeSidebarButton(ui->actionAddInstance, tr("Add Instance")));
+    sidebarLayout->addWidget(makeSidebarButton(ui->actionManageAccounts, tr("Accounts")));
+    sidebarLayout->addWidget(makeSidebarButton(ui->actionSettings, tr("Settings")));
+    sidebarLayout->addWidget(makeSidebarButton(ui->actionOpenWiki, tr("Help")));
+    sidebarLayout->addStretch();
+
+    auto sidebarFooter = new QLabel(tr("Modern UI"), sidebar);
+    sidebarFooter->setObjectName(QStringLiteral("modernSidebarFooter"));
+    sidebarLayout->addWidget(sidebarFooter);
+
+    auto content = new QWidget(ui->centralWidget);
+    content->setObjectName(QStringLiteral("modernContent"));
+    auto contentLayout = new QVBoxLayout(content);
+    contentLayout->setContentsMargins(22, 18, 22, 14);
+    contentLayout->setSpacing(14);
+
+    auto header = new QWidget(content);
+    header->setObjectName(QStringLiteral("modernHeader"));
+    auto headerLayout = new QHBoxLayout(header);
+    headerLayout->setContentsMargins(0, 0, 0, 0);
+    headerLayout->setSpacing(10);
+
+    auto title = new QLabel(tr("Instances"), header);
+    title->setObjectName(QStringLiteral("modernPageTitle"));
+    headerLayout->addWidget(title);
+
+    auto searchBox = new QLineEdit(header);
+    searchBox->setObjectName(QStringLiteral("modernSearchBox"));
+    searchBox->setPlaceholderText(tr("Search instances..."));
+    searchBox->setClearButtonEnabled(true);
+    searchBox->setMinimumWidth(240);
+    searchBox->setMaximumWidth(460);
+    headerLayout->addWidget(searchBox, 1);
+
+    auto addButton = new QToolButton(header);
+    addButton->setObjectName(QStringLiteral("modernPrimaryButton"));
+    addButton->setDefaultAction(ui->actionAddInstance);
+    addButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    addButton->setMinimumHeight(38);
+    headerLayout->addWidget(addButton);
+
+    contentLayout->addWidget(header);
+
     // OSX magic.
     setUnifiedTitleAndToolBarOnMac(true);
 
@@ -322,7 +409,13 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
         view->setSourceOfGroupCollapseStatus(
             [](const QString& groupName) -> bool { return APPLICATION->instances()->isGroupCollapsed(groupName); });
         connect(view, &InstanceView::groupStateChanged, APPLICATION->instances(), &InstanceList::on_GroupStateChanged);
-        ui->horizontalLayout->addWidget(view);
+
+        proxymodel->setFilterCaseSensitivity(Qt::CaseInsensitive);
+        connect(searchBox, &QLineEdit::textChanged, proxymodel, &QSortFilterProxyModel::setFilterFixedString);
+
+        contentLayout->addWidget(view, 1);
+        ui->horizontalLayout->addWidget(sidebar);
+        ui->horizontalLayout->addWidget(content, 1);
     }
     // The cat background
     {
