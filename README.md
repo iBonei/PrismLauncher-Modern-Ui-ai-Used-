@@ -1,3 +1,11 @@
+# Prism Modern UI — unofficial fork
+
+> **Unofficial modified fork.** This project is not Prism Launcher and is not endorsed by or affiliated with the Prism Launcher project. It is an experimental modern-UI fork maintained separately from upstream Prism Launcher.
+
+The current Windows packaging scripts can create both a portable ZIP and an Inno Setup installer from a local Release build. See [packaging/windows/README.md](packaging/windows/README.md).
+
+---
+
 <p align="center">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="/program_info/org.prismlauncher.PrismLauncher.logo-darkmode.svg">
