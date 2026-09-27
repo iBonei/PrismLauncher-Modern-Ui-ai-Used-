@@ -102,6 +102,7 @@
 #include <QStringLiteral>
 #include <QStyleFactory>
 #include <QTranslator>
+#include <QTimer>
 #include <QWindow>
 #include <utility>
 
@@ -1717,6 +1718,15 @@ MainWindow* Application::showMainWindow(bool minimized)
         } else {
             m_mainWindow->show();
         }
+
+        // QMainWindow can reapply restored toolbar visibility while the window
+        // is being shown. Reassert the modern shell after show, then once more
+        // on the next event-loop tick so legacy chrome cannot reappear.
+        m_mainWindow->applyModernWindowState();
+        QTimer::singleShot(0, m_mainWindow, [this] {
+            if (m_mainWindow)
+                m_mainWindow->applyModernWindowState();
+        });
 
         m_mainWindow->checkInstancePathForProblems();
         connect(this, &Application::updateAllowedChanged, m_mainWindow, &MainWindow::updatesAllowedChanged);
