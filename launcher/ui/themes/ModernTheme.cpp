@@ -326,6 +326,12 @@ QToolButton#modernLaunchButton:hover {
     background: #39cf7d;
 }
 
+QToolButton#modernLaunchButton:disabled {
+    background: #14231c;
+    color: #607267;
+    border-color: #243b30;
+}
+
 QToolButton#modernDetailsButton {
     background: #172334;
     color: #e8eef7;
