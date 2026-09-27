@@ -248,6 +248,8 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
     // Modern redesign shell. Keep Prism's existing actions and backend, but
     // present the main window with a navigation sidebar and content header.
     ui->mainToolBar->setVisible(false);
+    ui->instanceToolBar->setVisible(false);
+    ui->newsToolBar->setVisible(false);
 
     auto sidebar = new QFrame(ui->centralWidget);
     sidebar->setObjectName(QStringLiteral("modernSidebar"));
@@ -414,8 +416,51 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
         connect(searchBox, &QLineEdit::textChanged, proxymodel, &QSortFilterProxyModel::setFilterFixedString);
 
         contentLayout->addWidget(view, 1);
+
+        auto details = new QFrame(ui->centralWidget);
+        details->setObjectName(QStringLiteral("modernDetails"));
+        details->setMinimumWidth(240);
+        details->setMaximumWidth(285);
+
+        auto detailsLayout = new QVBoxLayout(details);
+        detailsLayout->setContentsMargins(16, 18, 16, 16);
+        detailsLayout->setSpacing(10);
+
+        auto detailsTitle = new QLabel(tr("Selected Instance"), details);
+        detailsTitle->setObjectName(QStringLiteral("modernDetailsTitle"));
+        detailsLayout->addWidget(detailsTitle);
+
+        m_modernInstanceName = new QLabel(tr("No instance selected"), details);
+        m_modernInstanceName->setObjectName(QStringLiteral("modernInstanceName"));
+        m_modernInstanceName->setWordWrap(true);
+        detailsLayout->addWidget(m_modernInstanceName);
+
+        m_modernInstanceStatus = new QLabel(tr("Choose an instance to see its actions."), details);
+        m_modernInstanceStatus->setObjectName(QStringLiteral("modernInstanceStatus"));
+        m_modernInstanceStatus->setWordWrap(true);
+        detailsLayout->addWidget(m_modernInstanceStatus);
+        detailsLayout->addSpacing(8);
+
+        auto makeDetailsButton = [details](QAction* action, const QString& objectName) {
+            auto button = new QToolButton(details);
+            button->setObjectName(objectName);
+            button->setDefaultAction(action);
+            button->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+            button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+            button->setMinimumHeight(40);
+            return button;
+        };
+
+        auto launchButton = makeDetailsButton(ui->actionLaunchInstance, QStringLiteral("modernLaunchButton"));
+        detailsLayout->addWidget(launchButton);
+        detailsLayout->addWidget(makeDetailsButton(ui->actionEditInstance, QStringLiteral("modernDetailsButton")));
+        detailsLayout->addWidget(makeDetailsButton(ui->actionViewSelectedInstFolder, QStringLiteral("modernDetailsButton")));
+        detailsLayout->addWidget(makeDetailsButton(ui->actionCopyInstance, QStringLiteral("modernDetailsButton")));
+        detailsLayout->addStretch();
+
         ui->horizontalLayout->addWidget(sidebar);
         ui->horizontalLayout->addWidget(content, 1);
+        ui->horizontalLayout->addWidget(details);
     }
     // The cat background
     {
@@ -673,8 +718,9 @@ void MainWindow::showInstanceContextMenu(const QPoint& pos)
 
 void MainWindow::updateMainToolBar()
 {
-    ui->menuBar->setVisible(APPLICATION->settings()->get("MenuBarInsteadOfToolBar").toBool());
-    ui->mainToolBar->setVisible(ui->menuBar->isNativeMenuBar() || !APPLICATION->settings()->get("MenuBarInsteadOfToolBar").toBool());
+    // The modern shell replaces the legacy menu/top toolbar.
+    ui->menuBar->setVisible(false);
+    ui->mainToolBar->setVisible(false);
 }
 
 void MainWindow::updateLaunchButton()
@@ -1789,6 +1835,10 @@ void MainWindow::instanceChanged(const QModelIndex& current, [[maybe_unused]] co
         ui->actionExportInstance->setEnabled(m_selectedInstance->canExport());
         renameButton->setText(m_selectedInstance->name());
         m_statusLeft->setText(m_selectedInstance->getStatusbarDescription());
+        if (m_modernInstanceName)
+            m_modernInstanceName->setText(m_selectedInstance->name());
+        if (m_modernInstanceStatus)
+            m_modernInstanceStatus->setText(m_selectedInstance->getStatusbarDescription());
         updateStatusCenter();
         updateInstanceToolIcon(m_selectedInstance->iconKey());
 
@@ -1824,6 +1874,10 @@ void MainWindow::selectionBad()
     // start by reseting everything...
     m_selectedInstance = nullptr;
     m_statusLeft->setText(tr("No instance selected"));
+    if (m_modernInstanceName)
+        m_modernInstanceName->setText(tr("No instance selected"));
+    if (m_modernInstanceStatus)
+        m_modernInstanceStatus->setText(tr("Choose an instance to see its actions."));
 
     statusBar()->clearMessage();
     ui->instanceToolBar->setEnabled(false);
