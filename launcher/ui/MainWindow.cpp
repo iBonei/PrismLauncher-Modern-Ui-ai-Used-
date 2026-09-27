@@ -320,9 +320,6 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
         accountButton->setText(ui->actionAccountsButton->text());
     });
 
-    auto sidebarFooter = new QLabel(tr("Modern UI"), sidebar);
-    sidebarFooter->setObjectName(QStringLiteral("modernSidebarFooter"));
-    sidebarLayout->addWidget(sidebarFooter);
 
     auto content = new QWidget(ui->centralWidget);
     content->setObjectName(QStringLiteral("modernContent"));
@@ -658,6 +655,7 @@ void MainWindow::applyModernWindowState()
     ui->mainToolBar->setVisible(false);
     ui->instanceToolBar->setVisible(false);
     ui->newsToolBar->setVisible(false);
+    statusBar()->setVisible(false);
 
     ui->mainToolBar->toggleViewAction()->setEnabled(false);
     ui->instanceToolBar->toggleViewAction()->setEnabled(false);
