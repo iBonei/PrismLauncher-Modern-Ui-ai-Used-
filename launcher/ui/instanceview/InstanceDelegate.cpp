@@ -103,44 +103,52 @@ void ListViewDelegate::paint(QPainter* painter, const QStyleOptionViewItem& opti
     const bool enabled = opt.state & QStyle::State_Enabled;
     const bool hovered = opt.state & QStyle::State_MouseOver;
 
-    QRect cardRect = opt.rect.adjusted(5, 5, -5, -5);
+    QRect cardRect = opt.rect.adjusted(6, 6, -6, -6);
 
     QColor cardBackground = selected ? QColor("#173a52") : QColor("#111b29");
-    QColor cardBorder = selected ? QColor("#35bdf5") : QColor("#26364c");
+    QColor cardBorder = selected ? QColor("#4fc7ff") : QColor("#26364c");
 
     if (hovered && !selected) {
         cardBackground = QColor("#162438");
-        cardBorder = QColor("#35516f");
+        cardBorder = QColor("#3a5674");
     }
 
     painter->setPen(QPen(cardBorder, selected ? 2.0 : 1.0));
     painter->setBrush(cardBackground);
-    painter->drawRoundedRect(cardRect, 10, 10);
+    painter->drawRoundedRect(cardRect, 12, 12);
 
     QIcon::Mode mode = enabled ? QIcon::Normal : QIcon::Disabled;
     if (selected)
         mode = QIcon::Selected;
     QIcon::State state = opt.state & QStyle::State_Open ? QIcon::On : QIcon::Off;
 
-    const int iconSize = 64;
-    QRect iconRect(cardRect.left() + (cardRect.width() - iconSize) / 2, cardRect.top() + 15, iconSize, iconSize);
+    const int iconSize = 76;
+    QRect iconRect(cardRect.left() + (cardRect.width() - iconSize) / 2, cardRect.top() + 16, iconSize, iconSize);
     opt.icon.paint(painter, iconRect, Qt::AlignCenter, mode, state);
 
-    QRect textRect(cardRect.left() + 10, iconRect.bottom() + 10, cardRect.width() - 20, 44);
+    auto instance = (BaseInstance*)index.data(InstanceList::InstancePointerRole).value<void*>();
+
     QFont nameFont = opt.font;
     nameFont.setBold(true);
     nameFont.setPointSizeF(nameFont.pointSizeF() + 0.5);
     painter->setFont(nameFont);
-    painter->setPen(enabled ? QColor("#e8eef7") : QColor("#637186"));
+    painter->setPen(enabled ? QColor("#eef4fb") : QColor("#637186"));
 
-    QFontMetrics metrics(nameFont);
-    const QString name = metrics.elidedText(index.data().toString(), Qt::ElideRight, textRect.width());
-    painter->drawText(textRect, Qt::AlignHCenter | Qt::AlignTop, name);
+    QRect nameRect(cardRect.left() + 12, iconRect.bottom() + 10, cardRect.width() - 24, 40);
+    painter->drawText(nameRect, Qt::AlignHCenter | Qt::AlignTop | Qt::TextWordWrap, index.data().toString());
 
-    auto instance = (BaseInstance*)index.data(InstanceList::InstancePointerRole).value<void*>();
     if (instance) {
+        QFont detailFont = opt.font;
+        detailFont.setPointSizeF(qMax(8.0, detailFont.pointSizeF() - 1.0));
+        painter->setFont(detailFont);
+        painter->setPen(QColor("#8998ad"));
+
+        QRect detailRect(cardRect.left() + 12, nameRect.bottom() + 2, cardRect.width() - 24, 20);
+        const QString detail = painter->fontMetrics().elidedText(instance->getStatusbarDescription(), Qt::ElideRight, detailRect.width());
+        painter->drawText(detailRect, Qt::AlignHCenter | Qt::AlignVCenter, detail);
+
         QStyleOptionViewItem badgeOption = opt;
-        badgeOption.rect = cardRect.adjusted(7, 7, -7, -7);
+        badgeOption.rect = cardRect.adjusted(8, 8, -8, -8);
         drawBadges(painter, badgeOption, instance, mode, state);
     }
 
@@ -150,7 +158,7 @@ void ListViewDelegate::paint(QPainter* painter, const QStyleOptionViewItem& opti
 QSize ListViewDelegate::sizeHint([[maybe_unused]] const QStyleOptionViewItem& option,
                                  [[maybe_unused]] const QModelIndex& index) const
 {
-    return QSize(150, 145);
+    return QSize(182, 186);
 }
 
 class NoReturnTextEdit : public QTextEdit {
@@ -186,8 +194,8 @@ void ListViewDelegate::updateEditorGeometry(QWidget* editor,
                                             const QStyleOptionViewItem& option,
                                             [[maybe_unused]] const QModelIndex& index) const
 {
-    const int iconSize = 64;
-    QRect textRect = option.rect.adjusted(10, iconSize + 22, -10, -10);
+    const int iconSize = 76;
+    QRect textRect = option.rect.adjusted(12, iconSize + 30, -12, -12);
     editor->setGeometry(textRect);
 }
 
