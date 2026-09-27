@@ -221,17 +221,18 @@ QFrame#modernSidebar {
 
 QLabel#modernBrand {
     color: #f4f8fd;
-    font-size: 18px;
+    font-size: 19px;
     font-weight: 700;
-    padding: 4px 2px;
+    padding: 4px 2px 6px 2px;
 }
 
 QToolButton#modernNavButton {
     background: transparent;
     border: 1px solid transparent;
-    border-radius: 8px;
+    border-radius: 9px;
     text-align: left;
-    padding: 9px 11px;
+    padding: 10px 11px;
+    font-size: 12px;
 }
 
 QToolButton#modernNavButton:hover {
@@ -281,9 +282,9 @@ QWidget#modernHeader {
 
 QLabel#modernPageTitle {
     color: #f1f5fb;
-    font-size: 22px;
+    font-size: 23px;
     font-weight: 700;
-    padding-right: 8px;
+    padding-right: 10px;
 }
 
 QLineEdit#modernSearchBox {
