@@ -1923,8 +1923,13 @@ void MainWindow::instanceChanged(const QModelIndex& current, [[maybe_unused]] co
         m_statusLeft->setText(m_selectedInstance->getStatusbarDescription());
         if (m_modernInstanceName)
             m_modernInstanceName->setText(m_selectedInstance->name());
-        if (m_modernInstanceStatus)
-            m_modernInstanceStatus->setText(m_selectedInstance->getStatusbarDescription());
+        if (m_modernInstanceStatus) {
+            QString status = m_selectedInstance->getStatusbarDescription();
+            const qsizetype comma = status.indexOf(',');
+            if (comma >= 0)
+                status = status.left(comma);
+            m_modernInstanceStatus->setText(status);
+        }
         if (m_modernInstanceIcon)
             m_modernInstanceIcon->setPixmap(APPLICATION->icons()->getIcon(m_selectedInstance->iconKey()).pixmap(88, 88));
         if (m_modernInstanceMeta) {
@@ -1932,6 +1937,11 @@ void MainWindow::instanceChanged(const QModelIndex& current, [[maybe_unused]] co
             const QString packVersion = m_selectedInstance->getManagedPackVersionName();
             if (!packVersion.isEmpty())
                 metaLines << tr("Pack version: %1").arg(packVersion);
+
+            if (m_selectedInstance->lastLaunch() > 0) {
+                const QDateTime lastLaunch = QDateTime::fromMSecsSinceEpoch(m_selectedInstance->lastLaunch());
+                metaLines << tr("Last played: %1").arg(QLocale().toString(lastLaunch, QLocale::ShortFormat));
+            }
 
             const int64_t played = m_selectedInstance->totalTimePlayed();
             if (played > 0)
