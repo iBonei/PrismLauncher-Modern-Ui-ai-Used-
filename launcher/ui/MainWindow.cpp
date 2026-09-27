@@ -609,10 +609,21 @@ MainWindow::~MainWindow() {}
 
 void MainWindow::applyModernWindowState()
 {
+    // Remove the legacy docked chrome entirely. The QAction objects remain
+    // alive and are reused by the modern sidebar/header/details controls.
     ui->menuBar->setVisible(false);
+
+    removeToolBar(ui->mainToolBar);
+    removeToolBar(ui->instanceToolBar);
+    removeToolBar(ui->newsToolBar);
+
     ui->mainToolBar->setVisible(false);
     ui->instanceToolBar->setVisible(false);
     ui->newsToolBar->setVisible(false);
+
+    ui->mainToolBar->toggleViewAction()->setEnabled(false);
+    ui->instanceToolBar->toggleViewAction()->setEnabled(false);
+    ui->newsToolBar->toggleViewAction()->setEnabled(false);
 }
 
 QMenu* MainWindow::createPopupMenu()
