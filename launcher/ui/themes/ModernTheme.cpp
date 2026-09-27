@@ -214,6 +214,79 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
     height: 0px;
 }
 
+QFrame#modernSidebar {
+    background: #0c1420;
+    border-right: 1px solid #1d2a3b;
+}
+
+QLabel#modernBrand {
+    color: #f4f8fd;
+    font-size: 18px;
+    font-weight: 700;
+    padding: 4px 2px;
+}
+
+QToolButton#modernNavButton {
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    text-align: left;
+    padding: 9px 11px;
+}
+
+QToolButton#modernNavButton:hover {
+    background: #152235;
+    border-color: #22344a;
+}
+
+QToolButton#modernNavButton[active="true"] {
+    background: #17334a;
+    border-color: #2d6f99;
+    color: #eef9ff;
+}
+
+QLabel#modernSidebarFooter {
+    color: #607086;
+    font-size: 11px;
+    padding: 8px 4px 2px 4px;
+}
+
+QWidget#modernContent {
+    background: #0b111b;
+}
+
+QWidget#modernHeader {
+    background: transparent;
+}
+
+QLabel#modernPageTitle {
+    color: #f1f5fb;
+    font-size: 22px;
+    font-weight: 700;
+    padding-right: 8px;
+}
+
+QLineEdit#modernSearchBox {
+    min-height: 24px;
+    background: #101a27;
+    border: 1px solid #26374d;
+    border-radius: 8px;
+    padding: 7px 10px;
+}
+
+QToolButton#modernPrimaryButton {
+    background: #208cc2;
+    color: white;
+    border: 1px solid #35bdf5;
+    border-radius: 8px;
+    padding: 8px 13px;
+    font-weight: 600;
+}
+
+QToolButton#modernPrimaryButton:hover {
+    background: #269dd0;
+}
+
 QToolTip {
     color: #f5f8fc;
     background: #172334;
