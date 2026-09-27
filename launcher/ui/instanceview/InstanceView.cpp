@@ -469,41 +469,42 @@ void InstanceView::paintEvent([[maybe_unused]] QPaintEvent* event)
 
     if (model()->rowCount() == 0) {
         painter.save();
-        QString emptyString = tr("Welcome!") + "\n" + tr("Click \"Add Instance\" to get started.");
-
-        // calculate the rect for the overlay
         painter.setRenderHint(QPainter::Antialiasing, true);
-        QFont font("sans", 20);
-        font.setBold(true);
 
-        QRect bounds = viewport()->geometry();
-        bounds.moveTop(0);
-        auto innerBounds = bounds;
-        innerBounds.adjust(10, 10, -10, -10);
+        const QRect bounds = viewport()->rect();
+        const int cardWidth = qMin(470, qMax(320, bounds.width() - 80));
+        const int cardHeight = 170;
+        QRect card(0, 0, cardWidth, cardHeight);
+        card.moveCenter(bounds.center());
 
-        QColor background = QApplication::palette().color(QPalette::WindowText);
-        QColor foreground = QApplication::palette().color(QPalette::Base);
-        foreground.setAlpha(190);
-        painter.setFont(font);
-        auto fontMetrics = painter.fontMetrics();
-        auto textRect = fontMetrics.boundingRect(innerBounds, Qt::AlignHCenter | Qt::TextWordWrap, emptyString);
-        textRect.moveCenter(bounds.center());
+        painter.setPen(QPen(QColor("#26364c"), 1));
+        painter.setBrush(QColor("#111b29"));
+        painter.drawRoundedRect(card, 14, 14);
 
-        auto wrapRect = textRect;
-        wrapRect.adjust(-10, -10, 10, 10);
+        QRect iconCircle(card.center().x() - 24, card.top() + 24, 48, 48);
+        painter.setPen(Qt::NoPen);
+        painter.setBrush(QColor("#173a52"));
+        painter.drawEllipse(iconCircle);
 
-        // check if we are allowed to draw in our area
-        if (!event->rect().intersects(wrapRect)) {
-            return;
-        }
+        QFont iconFont("sans", 22);
+        iconFont.setBold(true);
+        painter.setFont(iconFont);
+        painter.setPen(QColor("#35bdf5"));
+        painter.drawText(iconCircle, Qt::AlignCenter, "+");
 
-        painter.setBrush(QBrush(background));
-        painter.setPen(foreground);
-        painter.drawRoundedRect(wrapRect, 5.0, 5.0);
+        QFont titleFont("sans", 18);
+        titleFont.setBold(true);
+        painter.setFont(titleFont);
+        painter.setPen(QColor("#f1f5fb"));
+        QRect titleRect(card.left() + 24, iconCircle.bottom() + 13, card.width() - 48, 30);
+        painter.drawText(titleRect, Qt::AlignHCenter | Qt::AlignVCenter, tr("No instances yet"));
 
-        painter.setPen(foreground);
-        painter.setFont(font);
-        painter.drawText(textRect, Qt::AlignHCenter | Qt::TextWordWrap, emptyString);
+        QFont bodyFont("sans", 10);
+        painter.setFont(bodyFont);
+        painter.setPen(QColor("#8998ad"));
+        QRect bodyRect(card.left() + 30, titleRect.bottom() + 4, card.width() - 60, 42);
+        painter.drawText(bodyRect, Qt::AlignHCenter | Qt::AlignTop | Qt::TextWordWrap,
+                         tr("Add or import a Minecraft instance to get started."));
 
         painter.restore();
         return;
