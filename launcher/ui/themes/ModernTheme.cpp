@@ -306,10 +306,26 @@ QLabel#modernInstanceName {
     padding-top: 2px;
 }
 
+QLabel#modernInstanceIcon {
+    background: #111b29;
+    border: 1px solid #26364c;
+    border-radius: 14px;
+    margin: 8px 0 4px 0;
+}
+
 QLabel#modernInstanceStatus {
     color: #8798ae;
     font-size: 12px;
-    padding-bottom: 6px;
+    padding-bottom: 4px;
+}
+
+QLabel#modernInstanceMeta {
+    color: #a7b5c8;
+    background: #111b29;
+    border: 1px solid #223248;
+    border-radius: 8px;
+    padding: 9px 10px;
+    font-size: 11px;
 }
 
 QToolButton#modernLaunchButton {
