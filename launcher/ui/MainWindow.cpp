@@ -293,6 +293,33 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
     sidebarLayout->addWidget(makeSidebarButton(ui->actionOpenWiki, tr("Help")));
     sidebarLayout->addStretch();
 
+    auto foldersButton = new QToolButton(sidebar);
+    foldersButton->setObjectName(QStringLiteral("modernUtilityButton"));
+    foldersButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    foldersButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    foldersButton->setMinimumHeight(38);
+    foldersButton->setIcon(ui->actionFoldersButton->icon());
+    foldersButton->setText(tr("Folders"));
+    foldersButton->setMenu(ui->foldersMenu);
+    foldersButton->setPopupMode(QToolButton::InstantPopup);
+    sidebarLayout->addWidget(foldersButton);
+
+    auto accountButton = new QToolButton(sidebar);
+    accountButton->setObjectName(QStringLiteral("modernAccountButton"));
+    accountButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    accountButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    accountButton->setMinimumHeight(42);
+    accountButton->setIcon(ui->actionAccountsButton->icon());
+    accountButton->setText(ui->actionAccountsButton->text());
+    accountButton->setMenu(ui->accountsMenu);
+    accountButton->setPopupMode(QToolButton::InstantPopup);
+    sidebarLayout->addWidget(accountButton);
+
+    connect(ui->actionAccountsButton, &QAction::changed, this, [accountButton, this] {
+        accountButton->setIcon(ui->actionAccountsButton->icon());
+        accountButton->setText(ui->actionAccountsButton->text());
+    });
+
     auto sidebarFooter = new QLabel(tr("Modern UI"), sidebar);
     sidebarFooter->setObjectName(QStringLiteral("modernSidebarFooter"));
     sidebarLayout->addWidget(sidebarFooter);
