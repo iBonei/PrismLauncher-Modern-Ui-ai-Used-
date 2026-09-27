@@ -260,9 +260,34 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
     sidebarLayout->setContentsMargins(14, 18, 14, 14);
     sidebarLayout->setSpacing(7);
 
-    auto brand = new QLabel(tr("Prism Launcher"), sidebar);
+    auto brandRow = new QWidget(sidebar);
+    brandRow->setObjectName(QStringLiteral("modernBrandRow"));
+    auto brandLayout = new QHBoxLayout(brandRow);
+    brandLayout->setContentsMargins(0, 0, 0, 0);
+    brandLayout->setSpacing(10);
+
+    auto brandIcon = new QLabel(brandRow);
+    brandIcon->setObjectName(QStringLiteral("modernBrandIcon"));
+    brandIcon->setFixedSize(34, 34);
+    brandIcon->setAlignment(Qt::AlignCenter);
+    brandIcon->setPixmap(APPLICATION->logo().pixmap(30, 30));
+    brandLayout->addWidget(brandIcon);
+
+    auto brandText = new QWidget(brandRow);
+    auto brandTextLayout = new QVBoxLayout(brandText);
+    brandTextLayout->setContentsMargins(0, 0, 0, 0);
+    brandTextLayout->setSpacing(0);
+
+    auto brand = new QLabel(tr("Prism Launcher"), brandText);
     brand->setObjectName(QStringLiteral("modernBrand"));
-    sidebarLayout->addWidget(brand);
+    brandTextLayout->addWidget(brand);
+
+    auto brandSubtitle = new QLabel(tr("Modern Edition"), brandText);
+    brandSubtitle->setObjectName(QStringLiteral("modernBrandSubtitle"));
+    brandTextLayout->addWidget(brandSubtitle);
+
+    brandLayout->addWidget(brandText, 1);
+    sidebarLayout->addWidget(brandRow);
     sidebarLayout->addSpacing(12);
 
     auto makeSidebarButton = [sidebar](QAction* action, const QString& text) {
@@ -271,6 +296,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
         button->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
         button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         button->setMinimumHeight(40);
+        button->setIconSize(QSize(18, 18));
         button->setIcon(action->icon());
         button->setText(text);
         QObject::connect(button, &QToolButton::clicked, action, &QAction::trigger);
@@ -283,6 +309,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
     instancesButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     instancesButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     instancesButton->setMinimumHeight(40);
+    instancesButton->setIconSize(QSize(18, 18));
     instancesButton->setIcon(QIcon::fromTheme("view-grid"));
     instancesButton->setText(tr("Instances"));
     sidebarLayout->addWidget(instancesButton);
@@ -298,6 +325,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
     foldersButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     foldersButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     foldersButton->setMinimumHeight(38);
+    foldersButton->setIconSize(QSize(17, 17));
     foldersButton->setIcon(ui->actionFoldersButton->icon());
     foldersButton->setText(tr("Folders"));
     foldersButton->setMenu(ui->foldersMenu);
@@ -309,6 +337,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
     accountButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     accountButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     accountButton->setMinimumHeight(42);
+    accountButton->setIconSize(QSize(18, 18));
     accountButton->setIcon(ui->actionAccountsButton->icon());
     accountButton->setText(ui->actionAccountsButton->text());
     accountButton->setMenu(ui->accountsMenu);
@@ -349,6 +378,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
     addButton->setObjectName(QStringLiteral("modernPrimaryButton"));
     addButton->setDefaultAction(ui->actionAddInstance);
     addButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    addButton->setIconSize(QSize(18, 18));
     addButton->setMinimumHeight(38);
     headerLayout->addWidget(addButton);
 
@@ -481,6 +511,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
             button->setObjectName(objectName);
             button->setDefaultAction(action);
             button->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+            button->setIconSize(QSize(18, 18));
             button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
             button->setMinimumHeight(40);
             return button;
