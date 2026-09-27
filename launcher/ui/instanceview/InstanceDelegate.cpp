@@ -144,7 +144,11 @@ void ListViewDelegate::paint(QPainter* painter, const QStyleOptionViewItem& opti
         painter->setPen(QColor("#8998ad"));
 
         QRect detailRect(cardRect.left() + 12, nameRect.bottom() + 2, cardRect.width() - 24, 20);
-        const QString detail = painter->fontMetrics().elidedText(instance->getStatusbarDescription(), Qt::ElideRight, detailRect.width());
+        QString detail = instance->getStatusbarDescription();
+        const qsizetype comma = detail.indexOf(',');
+        if (comma >= 0)
+            detail = detail.left(comma);
+        detail = painter->fontMetrics().elidedText(detail, Qt::ElideRight, detailRect.width());
         painter->drawText(detailRect, Qt::AlignHCenter | Qt::AlignVCenter, detail);
 
         QStyleOptionViewItem badgeOption = opt;
