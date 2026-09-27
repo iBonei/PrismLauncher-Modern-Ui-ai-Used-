@@ -1956,6 +1956,8 @@ void MainWindow::updateStatusCenter()
 // Actions that also require other conditions (e.g. a running instance) won't be changed.
 void MainWindow::setInstanceActionsEnabled(bool enabled)
 {
+    ui->actionLaunchInstance->setEnabled(enabled);
+    ui->actionKillInstance->setEnabled(enabled);
     ui->actionEditInstance->setEnabled(enabled);
     ui->actionChangeInstGroup->setEnabled(enabled);
     ui->actionViewSelectedInstFolder->setEnabled(enabled);
