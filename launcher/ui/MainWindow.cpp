@@ -607,6 +607,14 @@ void MainWindow::retranslateUi()
 
 MainWindow::~MainWindow() {}
 
+void MainWindow::applyModernWindowState()
+{
+    ui->menuBar->setVisible(false);
+    ui->mainToolBar->setVisible(false);
+    ui->instanceToolBar->setVisible(false);
+    ui->newsToolBar->setVisible(false);
+}
+
 QMenu* MainWindow::createPopupMenu()
 {
     QMenu* filteredMenu = QMainWindow::createPopupMenu();
