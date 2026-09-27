@@ -245,10 +245,30 @@ QToolButton#modernNavButton[active="true"] {
     color: #eef9ff;
 }
 
+QToolButton#modernUtilityButton,
+QToolButton#modernAccountButton {
+    background: #111b29;
+    color: #dce6f3;
+    border: 1px solid #223248;
+    border-radius: 8px;
+    padding: 8px 10px;
+    text-align: left;
+}
+
+QToolButton#modernUtilityButton:hover,
+QToolButton#modernAccountButton:hover {
+    background: #17263a;
+    border-color: #35516f;
+}
+
+QToolButton#modernAccountButton {
+    font-weight: 600;
+}
+
 QLabel#modernSidebarFooter {
     color: #607086;
     font-size: 11px;
-    padding: 8px 4px 2px 4px;
+    padding: 6px 4px 2px 4px;
 }
 
 QWidget#modernContent {
