@@ -287,6 +287,59 @@ QToolButton#modernPrimaryButton:hover {
     background: #269dd0;
 }
 
+QFrame#modernDetails {
+    background: #0f1824;
+    border-left: 1px solid #1d2a3b;
+}
+
+QLabel#modernDetailsTitle {
+    color: #8ea0b8;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+QLabel#modernInstanceName {
+    color: #f4f8fd;
+    font-size: 19px;
+    font-weight: 700;
+    padding-top: 2px;
+}
+
+QLabel#modernInstanceStatus {
+    color: #8798ae;
+    font-size: 12px;
+    padding-bottom: 6px;
+}
+
+QToolButton#modernLaunchButton {
+    background: #2abf6f;
+    color: #07150d;
+    border: 1px solid #52dd8d;
+    border-radius: 8px;
+    padding: 9px 12px;
+    font-weight: 700;
+    text-align: left;
+}
+
+QToolButton#modernLaunchButton:hover {
+    background: #39cf7d;
+}
+
+QToolButton#modernDetailsButton {
+    background: #172334;
+    color: #e8eef7;
+    border: 1px solid #26364c;
+    border-radius: 8px;
+    padding: 8px 11px;
+    text-align: left;
+}
+
+QToolButton#modernDetailsButton:hover {
+    background: #1d2d42;
+    border-color: #35516f;
+}
+
 QToolTip {
     color: #f5f8fc;
     background: #172334;
