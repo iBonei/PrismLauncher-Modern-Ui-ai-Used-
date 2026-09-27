@@ -255,6 +255,11 @@ QToolButton#modernNavButton:hover {
     border-color: #2a4059;
 }
 
+QToolButton#modernNavButton:pressed {
+    background: #1a2a3e;
+    border-color: #3c5d7d;
+}
+
 QToolButton#modernNavButton[active="true"] {
     background: #17334a;
     border-color: #2d6f99;
@@ -275,6 +280,12 @@ QToolButton#modernUtilityButton:hover,
 QToolButton#modernAccountButton:hover {
     background: #17263a;
     border-color: #35516f;
+}
+
+QToolButton#modernUtilityButton:pressed,
+QToolButton#modernAccountButton:pressed {
+    background: #101c2b;
+    border-color: #466684;
 }
 
 QToolButton#modernAccountButton {
@@ -306,8 +317,17 @@ QLineEdit#modernSearchBox {
     min-height: 24px;
     background: #101a27;
     border: 1px solid #26374d;
-    border-radius: 8px;
+    border-radius: 9px;
     padding: 7px 10px;
+}
+
+QLineEdit#modernSearchBox:hover {
+    border-color: #35516f;
+}
+
+QLineEdit#modernSearchBox:focus {
+    border-color: #35bdf5;
+    background: #111d2b;
 }
 
 QToolButton#modernPrimaryButton {
@@ -321,6 +341,12 @@ QToolButton#modernPrimaryButton {
 
 QToolButton#modernPrimaryButton:hover {
     background: #269dd0;
+    border-color: #64d2ff;
+}
+
+QToolButton#modernPrimaryButton:pressed {
+    background: #177aa8;
+    border-color: #35bdf5;
 }
 
 QFrame#modernDetails {
@@ -376,6 +402,12 @@ QToolButton#modernLaunchButton {
 
 QToolButton#modernLaunchButton:hover {
     background: #39cf7d;
+    border-color: #74e7a6;
+}
+
+QToolButton#modernLaunchButton:pressed {
+    background: #20a75e;
+    border-color: #52dd8d;
 }
 
 QToolButton#modernLaunchButton:disabled {
@@ -396,6 +428,11 @@ QToolButton#modernDetailsButton {
 QToolButton#modernDetailsButton:hover {
     background: #1d2d42;
     border-color: #35516f;
+}
+
+QToolButton#modernDetailsButton:pressed {
+    background: #142235;
+    border-color: #466684;
 }
 
 QToolTip {
