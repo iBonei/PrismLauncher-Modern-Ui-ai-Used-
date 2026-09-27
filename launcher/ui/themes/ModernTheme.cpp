@@ -219,11 +219,26 @@ QFrame#modernSidebar {
     border-right: 1px solid #1d2a3b;
 }
 
+QWidget#modernBrandRow {
+    background: transparent;
+}
+
+QLabel#modernBrandIcon {
+    background: #111b29;
+    border: 1px solid #26364c;
+    border-radius: 9px;
+}
+
 QLabel#modernBrand {
     color: #f4f8fd;
-    font-size: 19px;
+    font-size: 16px;
     font-weight: 700;
-    padding: 4px 2px 6px 2px;
+}
+
+QLabel#modernBrandSubtitle {
+    color: #6f8198;
+    font-size: 9px;
+    font-weight: 500;
 }
 
 QToolButton#modernNavButton {
@@ -237,7 +252,7 @@ QToolButton#modernNavButton {
 
 QToolButton#modernNavButton:hover {
     background: #152235;
-    border-color: #22344a;
+    border-color: #2a4059;
 }
 
 QToolButton#modernNavButton[active="true"] {
@@ -299,8 +314,8 @@ QToolButton#modernPrimaryButton {
     background: #208cc2;
     color: white;
     border: 1px solid #35bdf5;
-    border-radius: 8px;
-    padding: 8px 13px;
+    border-radius: 9px;
+    padding: 8px 14px;
     font-weight: 600;
 }
 
