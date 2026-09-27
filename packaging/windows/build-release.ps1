@@ -35,14 +35,16 @@ try {
     Compress-Archive -Path (Join-Path $InstallDir "*") -DestinationPath $ZipPath -CompressionLevel Optimal
 
     $Candidates = @(
-        (Join-Path $env:LOCALAPPDATA "Programs\Inno Setup 6\ISCC.exe"),
-        (Join-Path ${env:ProgramFiles(x86)} "Inno Setup 6\ISCC.exe"),
-        (Join-Path $env:ProgramFiles "Inno Setup 6\ISCC.exe")
-    ) | Where-Object { $_ -and (Test-Path $_) }
+        @(
+            (Join-Path $env:LOCALAPPDATA "Programs\Inno Setup 6\ISCC.exe"),
+            (Join-Path ${env:ProgramFiles(x86)} "Inno Setup 6\ISCC.exe"),
+            (Join-Path $env:ProgramFiles "Inno Setup 6\ISCC.exe")
+        ) | Where-Object { $_ -and (Test-Path $_) }
+    )
 
     $Iscc = $null
     if ($Candidates.Count -gt 0) {
-        $Iscc = $Candidates[0]
+        $Iscc = [string]$Candidates[0]
     } else {
         $Command = Get-Command ISCC.exe -ErrorAction SilentlyContinue
         if ($Command) { $Iscc = $Command.Source }
