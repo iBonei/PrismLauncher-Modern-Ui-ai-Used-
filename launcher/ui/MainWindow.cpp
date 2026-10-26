@@ -2240,6 +2240,12 @@ void MainWindow::qmlAction(const QString& action)
         ui->actionEditInstance->trigger();
     else if (action == QStringLiteral("folder"))
         ui->actionViewSelectedInstFolder->trigger();
+    else if (action == QStringLiteral("delete"))
+        ui->actionDeleteInstance->trigger();
+    else if (action == QStringLiteral("rename"))
+        ui->actionRenameInstance->trigger();
+    else if (action == QStringLiteral("copy"))
+        ui->actionCopyInstance->trigger();
     else if (action == QStringLiteral("mods") && m_selectedInstance && m_selectedInstance->canEdit())
         APPLICATION->showInstanceWindow(m_selectedInstance, QStringLiteral("mods"));
     else if (action == QStringLiteral("worlds") && m_selectedInstance && m_selectedInstance->canEdit())
