@@ -44,7 +44,7 @@ PageDialog::PageDialog(BasePageProvider* pageProvider, QString defaultId, QWidge
     setLayout(mainLayout);
 
     auto* buttons = new QDialogButtonBox(QDialogButtonBox::Help | QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
-    buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
+    buttons->button(QDialogButtonBox::Ok)->setText(tr("Save settings"));
     buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
     buttons->button(QDialogButtonBox::Help)->setText(tr("Help"));
     buttons->setContentsMargins(0, 0, 6, 6);
@@ -55,6 +55,7 @@ PageDialog::PageDialog(BasePageProvider* pageProvider, QString defaultId, QWidge
     connect(buttons->button(QDialogButtonBox::Help), &QPushButton::clicked, m_container, &PageContainer::help);
 
     restoreGeometry(QByteArray::fromBase64(APPLICATION->settings()->get("PagedGeometry").toString().toUtf8()));
+    setMinimumSize(940, 620);
 }
 
 void PageDialog::accept()
