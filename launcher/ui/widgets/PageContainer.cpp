@@ -36,6 +36,7 @@
  */
 
 #include "PageContainer.h"
+#include <QFrame>
 #include "BuildConfig.h"
 #include "PageContainer_p.h"
 
@@ -165,7 +166,11 @@ void PageContainer::createUI()
 {
     m_pageStack = new QStackedLayout;
     m_pageList = new PageView;
+    m_pageList->setObjectName(QStringLiteral("modernPageNavigation"));
+    m_pageList->setMinimumWidth(210);
+    m_pageList->setMaximumWidth(250);
     m_header = new QLabel();
+    m_header->setObjectName(QStringLiteral("modernPageHeading"));
 
     QFont headerLabelFont = m_header->font();
     headerLabelFont.setBold(true);
@@ -179,17 +184,25 @@ void PageContainer::createUI()
     const int leftMargin = APPLICATION->style()->pixelMetric(QStyle::PM_LayoutLeftMargin);
     headerHLayout->addSpacerItem(new QSpacerItem(leftMargin, 0, QSizePolicy::Fixed, QSizePolicy::Ignored));
     headerHLayout->addWidget(m_header);
-    headerHLayout->setContentsMargins(0, 6, 0, 0);
+    headerHLayout->setContentsMargins(4, 8, 4, 9);
 
     m_pageStack->setContentsMargins(0, 0, 0, 0);
     m_pageStack->addWidget(new QWidget(this));
 
+    auto* pageSurface = new QFrame(this);
+    pageSurface->setObjectName(QStringLiteral("modernPageSurface"));
+    auto* surfaceLayout = new QVBoxLayout(pageSurface);
+    surfaceLayout->setContentsMargins(18, 18, 18, 18);
+    surfaceLayout->addLayout(m_pageStack);
+
     m_layout = new QGridLayout;
+    m_layout->setHorizontalSpacing(17);
+    m_layout->setVerticalSpacing(12);
     m_layout->addLayout(headerHLayout, 0, 1, 1, 1);
     m_layout->addWidget(m_pageList, 0, 0, 3, 1);
-    m_layout->addLayout(m_pageStack, 1, 1, 1, 1);
+    m_layout->addWidget(pageSurface, 1, 1, 1, 1);
     m_layout->setColumnStretch(1, 4);
-    m_layout->setContentsMargins(0, 0, 0, 0);
+    m_layout->setContentsMargins(16, 15, 16, 16);
     setLayout(m_layout);
 }
 
