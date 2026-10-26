@@ -64,6 +64,10 @@
 #include <QLineEdit>
 #include <QFrame>
 #include <QMainWindow>
+#include <QQuickWidget>
+#include <QQmlContext>
+#include <QQmlEngine>
+#include <QQuickImageProvider>
 #include <QMenu>
 #include <QMenuBar>
 #include <QMessageBox>
@@ -149,6 +153,22 @@ QString profileInUseFilter(const QString& profile, bool used)
     }
 }
 }  // namespace
+
+class PrismInstanceIconProvider final : public QQuickImageProvider {
+   public:
+    PrismInstanceIconProvider() : QQuickImageProvider(QQuickImageProvider::Pixmap) {}
+
+    QPixmap requestPixmap(const QString& iconKey, QSize* actualSize, const QSize& requestedSize) override
+    {
+        const int width = requestedSize.width() > 0 ? requestedSize.width() : 96;
+        const int height = requestedSize.height() > 0 ? requestedSize.height() : 96;
+        const auto icon = APPLICATION->icons()->getIcon(QUrl::fromPercentEncoding(iconKey.toUtf8()));
+        const QPixmap pixmap = icon.pixmap(width, height);
+        if (actualSize)
+            *actualSize = pixmap.size();
+        return pixmap;
+    }
+};
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
@@ -688,6 +708,35 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     // removing this looks stupid
     view->setFocus();
+
+    // The Qt Quick shell is a new interface driven by Prism's existing data and actions.
+    // Keep the legacy widgets initialized as action/selection controllers and as a fallback.
+    auto* quickShell = new QQuickWidget(ui->centralWidget);
+    quickShell->setObjectName(QStringLiteral("reimaginedQuickShell"));
+    quickShell->setResizeMode(QQuickWidget::SizeRootObjectToView);
+    quickShell->engine()->addImageProvider(QStringLiteral("prismicons"), new PrismInstanceIconProvider());
+    quickShell->rootContext()->setContextProperty(QStringLiteral("prism"), this);
+    quickShell->setSource(QUrl(QStringLiteral("qrc:/qml/LauncherShell.qml")));
+    if (quickShell->status() == QQuickWidget::Ready) {
+        sidebar->hide();
+        content->hide();
+        ui->horizontalLayout->addWidget(quickShell, 1);
+        quickShell->setFocus();
+    } else {
+        qWarning() << "Reimagined QML shell failed to load, keeping the Qt Widgets fallback.";
+        quickShell->deleteLater();
+    }
+
+    connect(view->selectionModel(), &QItemSelectionModel::currentChanged, this,
+            [this] { emit qmlSelectionChanged(); });
+    connect(APPLICATION->instances(), &QAbstractItemModel::rowsInserted, this,
+            [this] { emit qmlInstancesChanged(); });
+    connect(APPLICATION->instances(), &QAbstractItemModel::rowsRemoved, this,
+            [this] { emit qmlInstancesChanged(); });
+    connect(APPLICATION->instances(), &QAbstractItemModel::modelReset, this,
+            [this] { emit qmlInstancesChanged(); });
+    connect(APPLICATION->instances(), &QAbstractItemModel::dataChanged, this,
+            [this] { emit qmlInstancesChanged(); });
 
     retranslateUi();
 }
@@ -2131,6 +2180,66 @@ void MainWindow::setInstanceActionsEnabled(bool enabled)
         m_modernModsButton->setEnabled(enabled);
     if (m_modernWorldsButton)
         m_modernWorldsButton->setEnabled(enabled);
+}
+
+QVariantList MainWindow::qmlInstances() const
+{
+    QVariantList cards;
+    if (!proxymodel)
+        return cards;
+
+    for (int row = 0; row < proxymodel->rowCount(); ++row) {
+        const QModelIndex index = proxymodel->index(row, 0);
+        const QString id = index.data(InstanceList::InstanceIDRole).toString();
+        auto* instance = APPLICATION->instances()->getInstanceById(id);
+        if (!instance)
+            continue;
+
+        QVariantMap card;
+        card.insert(QStringLiteral("id"), id);
+        card.insert(QStringLiteral("name"), instance->name());
+        card.insert(QStringLiteral("iconKey"), instance->iconKey());
+        QString version = instance->getStatusbarDescription();
+        const qsizetype separator = version.indexOf(',');
+        if (separator >= 0)
+            version = version.left(separator);
+        card.insert(QStringLiteral("version"), version);
+        card.insert(QStringLiteral("running"), instance->isRunning());
+        card.insert(QStringLiteral("status"), instance->isRunning() ? tr("Running") : tr("Ready"));
+        cards.append(card);
+    }
+    return cards;
+}
+
+QString MainWindow::qmlSelectedId() const
+{
+    return m_selectedInstance ? m_selectedInstance->id() : QString();
+}
+
+void MainWindow::qmlSelectInstance(const QString& id)
+{
+    setSelectedInstanceById(id);
+    emit qmlSelectionChanged();
+}
+
+void MainWindow::qmlAction(const QString& action)
+{
+    if (action == QStringLiteral("new"))
+        ui->actionAddInstance->trigger();
+    else if (action == QStringLiteral("settings"))
+        ui->actionSettings->trigger();
+    else if (action == QStringLiteral("accounts"))
+        ui->actionManageAccounts->trigger();
+    else if (action == QStringLiteral("launch"))
+        ui->actionLaunchInstance->trigger();
+    else if (action == QStringLiteral("edit"))
+        ui->actionEditInstance->trigger();
+    else if (action == QStringLiteral("folder"))
+        ui->actionViewSelectedInstFolder->trigger();
+    else if (action == QStringLiteral("mods") && m_selectedInstance && m_selectedInstance->canEdit())
+        APPLICATION->showInstanceWindow(m_selectedInstance, QStringLiteral("mods"));
+    else if (action == QStringLiteral("worlds") && m_selectedInstance && m_selectedInstance->canEdit())
+        APPLICATION->showInstanceWindow(m_selectedInstance, QStringLiteral("worlds"));
 }
 
 void MainWindow::refreshCurrentInstance()
