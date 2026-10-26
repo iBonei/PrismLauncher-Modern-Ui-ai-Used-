@@ -1,5 +1,4 @@
 import QtQuick 2.15
-import QtQuick.Layouts 1.15
 
 Rectangle {
     id: shell
@@ -92,7 +91,6 @@ Rectangle {
             anchors.top: toolbar.bottom; anchors.bottom: parent.bottom
             topMargin: 0; clip: true
             contentHeight: stack.implicitHeight + 48
-            ScrollBar { }
             Column {
                 id: stack
                 x: 29; width: feed.width - 58; spacing: 26
