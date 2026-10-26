@@ -479,6 +479,87 @@ QToolButton#modernDetailsButton:pressed {
     border-color: #466684;
 }
 
+/* Reimagined v3: integrated launch pad, not a fixed side inspector. */
+QFrame#modernDetails {
+    background: #16283a;
+    border: 1px solid #2a455b;
+    border-radius: 16px;
+}
+
+QLabel#modernInstanceIcon {
+    background: #0f1d2b;
+    border: 1px solid #35536b;
+    border-radius: 15px;
+    margin: 0;
+}
+
+QLabel#modernInstanceName {
+    color: #f3f8ff;
+    font-size: 25px;
+    font-weight: 750;
+    padding: 0;
+}
+
+QLabel#modernInstanceStatus {
+    color: #afc1d1;
+    font-size: 12px;
+}
+
+QLabel#modernInstanceMeta {
+    background: transparent;
+    border: none;
+    color: #7f9eb6;
+    padding: 3px 0;
+    font-size: 11px;
+}
+
+QWidget#modernActionPanel {
+    background: transparent;
+}
+
+QToolButton#modernLaunchButton {
+    background: #29c77e;
+    color: #071b15;
+    border: 1px solid #62e4a5;
+    border-radius: 10px;
+    padding: 11px 16px;
+    font-size: 13px;
+    font-weight: 750;
+    text-align: left;
+    min-height: 25px;
+}
+
+QToolButton#modernLaunchButton:hover {
+    background: #4cdb9a;
+    border-color: #8ef2be;
+}
+
+QToolButton#modernDetailsButton {
+    background: #21384c;
+    color: #e0edf8;
+    border: 1px solid #375269;
+    border-radius: 9px;
+    padding: 8px 10px;
+    text-align: left;
+}
+
+QToolButton#modernDetailsButton:hover {
+    background: #304e65;
+    border-color: #6e91ac;
+}
+
+QWidget#modernContent {
+    background: #0b1421;
+}
+QLineEdit#modernSearchBox {
+    min-height: 28px;
+    background: #121f2d;
+    border-radius: 10px;
+}
+QLabel#modernPageTitle {
+    font-size: 23px;
+}
+
 QToolTip {
     color: #f5f8fc;
     background: #172334;
