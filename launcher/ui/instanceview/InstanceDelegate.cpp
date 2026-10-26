@@ -94,7 +94,6 @@ void ListViewDelegate::paint(QPainter* painter, const QStyleOptionViewItem& opti
 {
     QStyleOptionViewItem opt = option;
     initStyleOption(&opt, index);
-
     painter->save();
     painter->setRenderHint(QPainter::Antialiasing, true);
     painter->setClipRect(opt.rect);
@@ -102,67 +101,65 @@ void ListViewDelegate::paint(QPainter* painter, const QStyleOptionViewItem& opti
     const bool selected = opt.state & QStyle::State_Selected;
     const bool enabled = opt.state & QStyle::State_Enabled;
     const bool hovered = opt.state & QStyle::State_MouseOver;
+    const QRect card = opt.rect.adjusted(4, 4, -4, -4);
+    const QColor background = selected ? QColor("#1d3a4d") : hovered ? QColor("#192b3d") : QColor("#142333");
+    const QColor border = selected ? QColor("#48c8e9") : hovered ? QColor("#47627d") : QColor("#284055");
+    painter->setPen(QPen(border, selected ? 2.0 : 1.0));
+    painter->setBrush(background);
+    painter->drawRoundedRect(card, 14, 14);
 
-    QRect cardRect = opt.rect.adjusted(3, 3, -3, -3);
+    const QRect artBox(card.left() + 15, card.top() + 17, 76, 76);
+    painter->setPen(Qt::NoPen);
+    painter->setBrush(QColor("#0d1927"));
+    painter->drawRoundedRect(artBox, 11, 11);
+    opt.icon.paint(painter, artBox.adjusted(7, 7, -7, -7), Qt::AlignCenter,
+                   enabled ? (selected ? QIcon::Selected : QIcon::Normal) : QIcon::Disabled);
 
-    QColor cardBackground = selected ? QColor("#173a52") : QColor("#111b29");
-    QColor cardBorder = selected ? QColor("#4fc7ff") : QColor("#26364c");
+    const auto* instance = (BaseInstance*)index.data(InstanceList::InstancePointerRole).value<void*>();
+    const int textLeft = artBox.right() + 16;
+    const int textWidth = qMax(10, card.right() - textLeft - 12);
+    const QRect nameRect(textLeft, card.top() + 18, textWidth, 23);
+    QFont titleFont = opt.font;
+    titleFont.setBold(true);
+    titleFont.setPointSizeF(titleFont.pointSizeF() + 1.0);
+    painter->setFont(titleFont);
+    painter->setPen(enabled ? QColor("#f3f7fc") : QColor("#68788c"));
+    painter->drawText(nameRect, Qt::AlignLeft | Qt::AlignVCenter,
+                      painter->fontMetrics().elidedText(index.data().toString(), Qt::ElideRight, textWidth));
 
-    if (hovered && !selected) {
-        cardBackground = QColor("#162438");
-        cardBorder = QColor("#3a5674");
+    QString detail = instance ? instance->getStatusbarDescription() : QString();
+    const qsizetype comma = detail.indexOf(',');
+    if (comma >= 0)
+        detail = detail.left(comma);
+    QFont detailFont = opt.font;
+    detailFont.setPointSizeF(qMax(8.0, detailFont.pointSizeF() - 0.5));
+    painter->setFont(detailFont);
+    painter->setPen(QColor("#9caec0"));
+    painter->drawText(QRect(textLeft, card.top() + 44, textWidth, 19),
+                      Qt::AlignLeft | Qt::AlignVCenter,
+                      painter->fontMetrics().elidedText(detail, Qt::ElideRight, textWidth));
+
+    QString stateText = QObject::tr("Ready to launch");
+    QColor stateColor("#66d3a0");
+    if (instance && instance->isRunning()) {
+        stateText = QObject::tr("Running");
+        stateColor = QColor("#6fd0f5");
+    } else if (instance && (instance->hasCrashed() || instance->hasVersionBroken())) {
+        stateText = QObject::tr("Needs attention");
+        stateColor = QColor("#f0a2a6");
     }
-
-    painter->setPen(QPen(cardBorder, selected ? 2.0 : 1.0));
-    painter->setBrush(cardBackground);
-    painter->drawRoundedRect(cardRect, 15, 15);
-
-    QIcon::Mode mode = enabled ? QIcon::Normal : QIcon::Disabled;
-    if (selected)
-        mode = QIcon::Selected;
-    QIcon::State state = opt.state & QStyle::State_Open ? QIcon::On : QIcon::Off;
-
-    const int iconSize = 78;
-    QRect iconRect(cardRect.left() + (cardRect.width() - iconSize) / 2, cardRect.top() + 16, iconSize, iconSize);
-    opt.icon.paint(painter, iconRect, Qt::AlignCenter, mode, state);
-
-    auto instance = (BaseInstance*)index.data(InstanceList::InstancePointerRole).value<void*>();
-
-    QFont nameFont = opt.font;
-    nameFont.setBold(true);
-    nameFont.setPointSizeF(nameFont.pointSizeF() + 1.0);
-    painter->setFont(nameFont);
-    painter->setPen(enabled ? QColor("#eef4fb") : QColor("#637186"));
-
-    QRect nameRect(cardRect.left() + 12, iconRect.bottom() + 10, cardRect.width() - 24, 40);
-    painter->drawText(nameRect, Qt::AlignHCenter | Qt::AlignTop | Qt::TextWordWrap, index.data().toString());
-
-    if (instance) {
-        QFont detailFont = opt.font;
-        detailFont.setPointSizeF(qMax(8.0, detailFont.pointSizeF() - 1.0));
-        painter->setFont(detailFont);
-        painter->setPen(QColor("#8998ad"));
-
-        QRect detailRect(cardRect.left() + 12, nameRect.bottom() + 2, cardRect.width() - 24, 20);
-        QString detail = instance->getStatusbarDescription();
-        const qsizetype comma = detail.indexOf(',');
-        if (comma >= 0)
-            detail = detail.left(comma);
-        detail = painter->fontMetrics().elidedText(detail, Qt::ElideRight, detailRect.width());
-        painter->drawText(detailRect, Qt::AlignHCenter | Qt::AlignVCenter, detail);
-
-        QStyleOptionViewItem badgeOption = opt;
-        badgeOption.rect = cardRect.adjusted(8, 8, -8, -8);
-        drawBadges(painter, badgeOption, instance, mode, state);
-    }
-
+    painter->setPen(stateColor);
+    painter->drawEllipse(QRect(textLeft, card.top() + 78, 7, 7));
+    painter->setPen(QColor("#a5b7c8"));
+    painter->drawText(QRect(textLeft + 13, card.top() + 70, textWidth - 13, 23),
+                      Qt::AlignLeft | Qt::AlignVCenter, stateText);
     painter->restore();
 }
 
 QSize ListViewDelegate::sizeHint([[maybe_unused]] const QStyleOptionViewItem& option,
                                  [[maybe_unused]] const QModelIndex& index) const
 {
-    return QSize(192, 200);
+    return QSize(310, 116);
 }
 
 class NoReturnTextEdit : public QTextEdit {
@@ -198,8 +195,7 @@ void ListViewDelegate::updateEditorGeometry(QWidget* editor,
                                             const QStyleOptionViewItem& option,
                                             [[maybe_unused]] const QModelIndex& index) const
 {
-    const int iconSize = 76;
-    QRect textRect = option.rect.adjusted(12, iconSize + 30, -12, -12);
+    QRect textRect = option.rect.adjusted(108, 17, -16, -65);
     editor->setGeometry(textRect);
 }
 
