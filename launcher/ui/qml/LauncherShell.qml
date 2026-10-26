@@ -160,7 +160,30 @@ Rectangle {
                             Text { x: 16; y: 160; width: parent.width - 32; text: modelData.version; font.pixelSize: 11; color: "#9cb4c9"; elide: Text.ElideRight }
                             Rectangle { x: 16; y: 190; width: 6; height: 6; radius: 3; color: modelData.running ? "#4bddaa" : "#53beda" }
                             Text { x: 29; y: 184; width: parent.width - 42; text: modelData.running ? "Running" : "Ready"; color: "#89aabf"; font.pixelSize: 11 }
-                            MouseArea { id: over; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: prism.qmlSelectInstance(modelData.id); onDoubleClicked: { prism.qmlSelectInstance(modelData.id); shell.action("launch") } }
+                            MouseArea {
+                                id: over
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                acceptedButtons: Qt.LeftButton | Qt.RightButton
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: function(mouse) {
+                                    prism.qmlSelectInstance(modelData.id)
+                                    if (mouse.button === Qt.RightButton) {
+                                        var point = cardTile.mapToItem(shell, mouse.x, mouse.y)
+                                        contextMenu.x = Math.max(8, Math.min(point.x, shell.width - contextMenu.width - 8))
+                                        contextMenu.y = Math.max(8, Math.min(point.y, shell.height - contextMenu.height - 8))
+                                        contextMenu.visible = true
+                                    } else {
+                                        contextMenu.visible = false
+                                    }
+                                }
+                                onDoubleClicked: function(mouse) {
+                                    if (mouse.button === Qt.LeftButton) {
+                                        prism.qmlSelectInstance(modelData.id)
+                                        shell.action("launch")
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -206,4 +229,65 @@ Rectangle {
             }
         }
     }
+    // Context actions stay inside the new shell. Destructive operations still
+    // use Prism's existing confirmation dialog and trash safeguards.
+    MouseArea {
+        anchors.fill: parent
+        z: 90
+        visible: contextMenu.visible
+        acceptedButtons: Qt.LeftButton | Qt.RightButton
+        onClicked: contextMenu.visible = false
+    }
+    Rectangle {
+        id: contextMenu
+        z: 91
+        visible: false
+        width: 220
+        height: menuColumn.implicitHeight + 12
+        radius: 12
+        color: "#1b3042"
+        border.color: "#456376"
+        border.width: 1
+
+        Column {
+            id: menuColumn
+            x: 6; y: 6
+            width: parent.width - 12
+            Repeater {
+                model: [
+                    { label: "Launch Minecraft", actionId: "launch", destructive: false },
+                    { label: "Instance settings", actionId: "edit", destructive: false },
+                    { label: "Rename instance", actionId: "rename", destructive: false },
+                    { label: "Copy instance", actionId: "copy", destructive: false },
+                    { label: "Open instance folder", actionId: "folder", destructive: false },
+                    { label: "Delete instance…", actionId: "delete", destructive: true }
+                ]
+                delegate: Rectangle {
+                    required property var modelData
+                    width: menuColumn.width
+                    height: 39
+                    radius: 8
+                    color: menuHover.containsMouse ? (modelData.destructive ? "#64343e" : "#305268") : "transparent"
+                    Text {
+                        x: 13
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: modelData.label
+                        font.pixelSize: 13
+                        color: modelData.destructive ? "#ffadad" : "#e3f1fa"
+                    }
+                    MouseArea {
+                        id: menuHover
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: {
+                            contextMenu.visible = false
+                            shell.action(modelData.actionId)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 }
