@@ -103,7 +103,7 @@ void ListViewDelegate::paint(QPainter* painter, const QStyleOptionViewItem& opti
     const bool enabled = opt.state & QStyle::State_Enabled;
     const bool hovered = opt.state & QStyle::State_MouseOver;
 
-    QRect cardRect = opt.rect.adjusted(6, 6, -6, -6);
+    QRect cardRect = opt.rect.adjusted(3, 3, -3, -3);
 
     QColor cardBackground = selected ? QColor("#173a52") : QColor("#111b29");
     QColor cardBorder = selected ? QColor("#4fc7ff") : QColor("#26364c");
@@ -115,14 +115,14 @@ void ListViewDelegate::paint(QPainter* painter, const QStyleOptionViewItem& opti
 
     painter->setPen(QPen(cardBorder, selected ? 2.0 : 1.0));
     painter->setBrush(cardBackground);
-    painter->drawRoundedRect(cardRect, 12, 12);
+    painter->drawRoundedRect(cardRect, 15, 15);
 
     QIcon::Mode mode = enabled ? QIcon::Normal : QIcon::Disabled;
     if (selected)
         mode = QIcon::Selected;
     QIcon::State state = opt.state & QStyle::State_Open ? QIcon::On : QIcon::Off;
 
-    const int iconSize = 76;
+    const int iconSize = 78;
     QRect iconRect(cardRect.left() + (cardRect.width() - iconSize) / 2, cardRect.top() + 16, iconSize, iconSize);
     opt.icon.paint(painter, iconRect, Qt::AlignCenter, mode, state);
 
@@ -130,7 +130,7 @@ void ListViewDelegate::paint(QPainter* painter, const QStyleOptionViewItem& opti
 
     QFont nameFont = opt.font;
     nameFont.setBold(true);
-    nameFont.setPointSizeF(nameFont.pointSizeF() + 0.5);
+    nameFont.setPointSizeF(nameFont.pointSizeF() + 1.0);
     painter->setFont(nameFont);
     painter->setPen(enabled ? QColor("#eef4fb") : QColor("#637186"));
 
@@ -162,7 +162,7 @@ void ListViewDelegate::paint(QPainter* painter, const QStyleOptionViewItem& opti
 QSize ListViewDelegate::sizeHint([[maybe_unused]] const QStyleOptionViewItem& option,
                                  [[maybe_unused]] const QModelIndex& index) const
 {
-    return QSize(182, 186);
+    return QSize(192, 200);
 }
 
 class NoReturnTextEdit : public QTextEdit {
