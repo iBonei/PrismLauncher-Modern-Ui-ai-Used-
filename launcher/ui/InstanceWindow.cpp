@@ -88,6 +88,7 @@ InstanceWindow::InstanceWindow(MinecraftInstance* instance, QWidget* parent) : Q
 
         m_launchButton = new QToolButton(this);
         m_launchButton->setText(tr("&Launch"));
+        m_launchButton->setObjectName(QStringLiteral("modernLaunchButton"));
         m_launchButton->setToolTip(tr("Launch the instance"));
         m_launchButton->setPopupMode(QToolButton::MenuButtonPopup);
         m_launchButton->setMinimumWidth(80);  // HACK!!
@@ -96,6 +97,7 @@ InstanceWindow::InstanceWindow(MinecraftInstance* instance, QWidget* parent) : Q
 
         m_restartButton = new QPushButton(this);
         m_restartButton->setText(tr("&Restart"));
+        m_restartButton->setObjectName(QStringLiteral("modernLaunchButton"));
         m_restartButton->setToolTip(tr("Restart the running instance"));
         horizontalLayout->addWidget(m_restartButton);
         connect(m_restartButton, &QPushButton::clicked, this, &InstanceWindow::restartInstance);
@@ -104,6 +106,7 @@ InstanceWindow::InstanceWindow(MinecraftInstance* instance, QWidget* parent) : Q
 
         m_killButton = new QPushButton(this);
         m_killButton->setText(tr("&Kill"));
+        m_killButton->setObjectName(QStringLiteral("modernDangerButton"));
         m_killButton->setToolTip(tr("Kill the running instance"));
         m_killButton->setShortcut(QKeySequence(tr("Ctrl+K")));
         horizontalLayout->addWidget(m_killButton);
@@ -113,6 +116,7 @@ InstanceWindow::InstanceWindow(MinecraftInstance* instance, QWidget* parent) : Q
 
         m_closeButton = new QPushButton(this);
         m_closeButton->setText(tr("Close"));
+        m_closeButton->setObjectName(QStringLiteral("modernSecondaryButton"));
         horizontalLayout->addWidget(m_closeButton);
         connect(m_closeButton, &QPushButton::clicked, this, &QMainWindow::close);
 
