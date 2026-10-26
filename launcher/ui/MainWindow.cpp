@@ -2238,6 +2238,8 @@ void MainWindow::qmlAction(const QString& action)
         ui->actionLaunchInstance->trigger();
     else if (action == QStringLiteral("edit"))
         ui->actionEditInstance->trigger();
+    else if (action == QStringLiteral("editLegacy") || action == QStringLiteral("components"))
+        ui->actionEditInstance->trigger();
     else if (action == QStringLiteral("folder"))
         ui->actionViewSelectedInstFolder->trigger();
     else if (action == QStringLiteral("delete"))
