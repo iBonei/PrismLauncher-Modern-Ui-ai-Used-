@@ -50,6 +50,7 @@
 #include <QStackedLayout>
 #include <QStyledItemDelegate>
 #include <QUrl>
+#include <QVBoxLayout>
 #include <utility>
 
 #include "settings/SettingsObject.h"
