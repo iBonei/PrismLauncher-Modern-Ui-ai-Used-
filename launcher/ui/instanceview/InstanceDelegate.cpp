@@ -115,7 +115,7 @@ void ListViewDelegate::paint(QPainter* painter, const QStyleOptionViewItem& opti
     opt.icon.paint(painter, artBox.adjusted(7, 7, -7, -7), Qt::AlignCenter,
                    enabled ? (selected ? QIcon::Selected : QIcon::Normal) : QIcon::Disabled);
 
-    const auto* instance = (BaseInstance*)index.data(InstanceList::InstancePointerRole).value<void*>();
+    auto* instance = (BaseInstance*)index.data(InstanceList::InstancePointerRole).value<void*>();
     const int textLeft = artBox.right() + 16;
     const int textWidth = qMax(10, card.right() - textLeft - 12);
     const QRect nameRect(textLeft, card.top() + 18, textWidth, 23);
