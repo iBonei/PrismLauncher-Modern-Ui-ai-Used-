@@ -365,46 +365,8 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
     contentLayout->setContentsMargins(26, 24, 26, 20);
     contentLayout->setSpacing(14);
 
-    // Library-first workspace: a distinct dashboard rather than Prism's old toolbar.
-    auto welcome = new QFrame(content);
-    welcome->setObjectName(QStringLiteral("modernWelcome"));
-    auto welcomeLayout = new QVBoxLayout(welcome);
-    welcomeLayout->setContentsMargins(26, 24, 26, 22);
-    welcomeLayout->setSpacing(9);
-
-    auto welcomeEyebrow = new QLabel(tr("YOUR MINECRAFT WORKSPACE"), welcome);
-    welcomeEyebrow->setObjectName(QStringLiteral("modernWelcomeEyebrow"));
-    welcomeLayout->addWidget(welcomeEyebrow);
-
-    auto welcomeTitle = new QLabel(tr("Ready for your next adventure?"), welcome);
-    welcomeTitle->setObjectName(QStringLiteral("modernWelcomeTitle"));
-    welcomeTitle->setWordWrap(true);
-    welcomeLayout->addWidget(welcomeTitle);
-
-    auto welcomeSubtitle = new QLabel(tr("Launch a world, manage your modpacks, or start something new."), welcome);
-    welcomeSubtitle->setObjectName(QStringLiteral("modernWelcomeSubtitle"));
-    welcomeSubtitle->setWordWrap(true);
-    welcomeLayout->addWidget(welcomeSubtitle);
-
-    auto welcomeActions = new QHBoxLayout();
-    welcomeActions->setContentsMargins(0, 12, 0, 0);
-    welcomeActions->setSpacing(10);
-    auto createInstanceButton = new QToolButton(welcome);
-    createInstanceButton->setObjectName(QStringLiteral("modernPrimaryButton"));
-    createInstanceButton->setDefaultAction(ui->actionAddInstance);
-    createInstanceButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    createInstanceButton->setIconSize(QSize(18, 18));
-    createInstanceButton->setMinimumHeight(42);
-    welcomeActions->addWidget(createInstanceButton);
-    auto accountsShortcut = new QToolButton(welcome);
-    accountsShortcut->setObjectName(QStringLiteral("modernSecondaryButton"));
-    accountsShortcut->setDefaultAction(ui->actionManageAccounts);
-    accountsShortcut->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    accountsShortcut->setMinimumHeight(42);
-    welcomeActions->addWidget(accountsShortcut);
-    welcomeActions->addStretch();
-    welcomeLayout->addLayout(welcomeActions);
-    contentLayout->addWidget(welcome);
+    // The selected instance is now the primary workspace, not a detached inspector.
+    // It is inserted once the instance view and its actions have been initialized.
 
     auto libraryHeader = new QWidget(content);
     libraryHeader->setObjectName(QStringLiteral("modernHeader"));
@@ -418,6 +380,13 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     libraryHeaderLayout->addStretch();
 
+    auto addButton = new QToolButton(libraryHeader);
+    addButton->setObjectName(QStringLiteral("modernPrimaryButton"));
+    addButton->setDefaultAction(ui->actionAddInstance);
+    addButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    addButton->setMinimumHeight(38);
+    libraryHeaderLayout->addWidget(addButton);
+
     auto searchBox = new QLineEdit(libraryHeader);
     searchBox->setObjectName(QStringLiteral("modernSearchBox"));
     searchBox->setPlaceholderText(tr("Find an instance..."));
@@ -428,7 +397,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     contentLayout->addWidget(libraryHeader);
 
-    auto libraryHint = new QLabel(tr("Your installed instances, organized just the way you like."), content);
+    auto libraryHint = new QLabel(tr("Double-click to launch. Select an instance to see its workspace."), content);
     libraryHint->setObjectName(QStringLiteral("modernLibraryHint"));
     contentLayout->addWidget(libraryHint);
 
@@ -519,67 +488,79 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
 
         contentLayout->addWidget(view, 1);
 
-        auto details = new QFrame(ui->centralWidget);
+        auto details = new QFrame(content);
         details->setObjectName(QStringLiteral("modernDetails"));
-        details->setMinimumWidth(264);
-        details->setMaximumWidth(306);
+        details->setMinimumHeight(178);
 
-        auto detailsLayout = new QVBoxLayout(details);
-        detailsLayout->setContentsMargins(16, 18, 16, 16);
-        detailsLayout->setSpacing(10);
-
-        auto detailsTitle = new QLabel(tr("Selected Instance"), details);
-        detailsTitle->setObjectName(QStringLiteral("modernDetailsTitle"));
-        detailsLayout->addWidget(detailsTitle);
-        detailsLayout->addSpacing(13);
+        auto detailsLayout = new QHBoxLayout(details);
+        detailsLayout->setContentsMargins(26, 21, 24, 21);
+        detailsLayout->setSpacing(22);
 
         m_modernInstanceIcon = new QLabel(details);
         m_modernInstanceIcon->setObjectName(QStringLiteral("modernInstanceIcon"));
         m_modernInstanceIcon->setAlignment(Qt::AlignCenter);
-        m_modernInstanceIcon->setFixedSize(96, 96);
-        detailsLayout->addWidget(m_modernInstanceIcon, 0, Qt::AlignHCenter);
+        m_modernInstanceIcon->setFixedSize(112, 112);
+        detailsLayout->addWidget(m_modernInstanceIcon);
 
-        m_modernInstanceName = new QLabel(tr("No instance selected"), details);
+        auto instanceIdentity = new QWidget(details);
+        auto identityLayout = new QVBoxLayout(instanceIdentity);
+        identityLayout->setContentsMargins(0, 4, 0, 4);
+        identityLayout->setSpacing(5);
+
+        auto identityEyebrow = new QLabel(tr("YOUR LAUNCH PAD"), instanceIdentity);
+        identityEyebrow->setObjectName(QStringLiteral("modernSectionEyebrow"));
+        identityLayout->addWidget(identityEyebrow);
+
+        m_modernInstanceName = new QLabel(tr("Choose your next adventure"), instanceIdentity);
         m_modernInstanceName->setObjectName(QStringLiteral("modernInstanceName"));
         m_modernInstanceName->setWordWrap(true);
-        detailsLayout->addWidget(m_modernInstanceName);
+        identityLayout->addWidget(m_modernInstanceName);
 
-        m_modernInstanceStatus = new QLabel(tr("Choose an instance to see its actions."), details);
+        m_modernInstanceStatus = new QLabel(tr("Select a Minecraft instance from the library below."), instanceIdentity);
         m_modernInstanceStatus->setObjectName(QStringLiteral("modernInstanceStatus"));
         m_modernInstanceStatus->setWordWrap(true);
-        detailsLayout->addWidget(m_modernInstanceStatus);
+        identityLayout->addWidget(m_modernInstanceStatus);
 
-        m_modernInstanceMeta = new QLabel(tr("No details available"), details);
+        m_modernInstanceMeta = new QLabel(tr("Your instance details and recent playtime appear here."), instanceIdentity);
         m_modernInstanceMeta->setObjectName(QStringLiteral("modernInstanceMeta"));
         m_modernInstanceMeta->setWordWrap(true);
-        detailsLayout->addWidget(m_modernInstanceMeta);
-        detailsLayout->addSpacing(20);
+        identityLayout->addWidget(m_modernInstanceMeta);
+        identityLayout->addStretch();
+        detailsLayout->addWidget(instanceIdentity, 1);
 
-        auto actionsLabel = new QLabel(tr("INSTANCE ACTIONS"), details);
-        actionsLabel->setObjectName(QStringLiteral("modernSectionEyebrow"));
-        detailsLayout->addWidget(actionsLabel);
+        auto actionPanel = new QWidget(details);
+        actionPanel->setObjectName(QStringLiteral("modernActionPanel"));
+        actionPanel->setFixedWidth(278);
+        auto actionLayout = new QVBoxLayout(actionPanel);
+        actionLayout->setContentsMargins(0, 0, 0, 0);
+        actionLayout->setSpacing(9);
 
-        auto makeDetailsButton = [details](QAction* action, const QString& objectName) {
-            auto button = new QToolButton(details);
+        auto makeDetailsButton = [actionPanel](QAction* action, const QString& objectName) {
+            auto button = new QToolButton(actionPanel);
             button->setObjectName(objectName);
             button->setDefaultAction(action);
             button->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-            button->setIconSize(QSize(18, 18));
+            button->setIconSize(QSize(19, 19));
             button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-            button->setMinimumHeight(40);
+            button->setMinimumHeight(39);
             return button;
         };
 
-        auto launchButton = makeDetailsButton(ui->actionLaunchInstance, QStringLiteral("modernLaunchButton"));
-        detailsLayout->addWidget(launchButton);
-        detailsLayout->addWidget(makeDetailsButton(ui->actionEditInstance, QStringLiteral("modernDetailsButton")));
-        detailsLayout->addWidget(makeDetailsButton(ui->actionViewSelectedInstFolder, QStringLiteral("modernDetailsButton")));
-        detailsLayout->addWidget(makeDetailsButton(ui->actionCopyInstance, QStringLiteral("modernDetailsButton")));
-        detailsLayout->addStretch();
+        actionLayout->addWidget(makeDetailsButton(ui->actionLaunchInstance, QStringLiteral("modernLaunchButton")));
+
+        auto quickActions = new QHBoxLayout();
+        quickActions->setSpacing(8);
+        quickActions->addWidget(makeDetailsButton(ui->actionEditInstance, QStringLiteral("modernDetailsButton")));
+        quickActions->addWidget(makeDetailsButton(ui->actionViewSelectedInstFolder, QStringLiteral("modernDetailsButton")));
+        actionLayout->addLayout(quickActions);
+        actionLayout->addWidget(makeDetailsButton(ui->actionCopyInstance, QStringLiteral("modernDetailsButton")));
+        actionLayout->addStretch();
+        detailsLayout->addWidget(actionPanel);
+
+        contentLayout->insertWidget(0, details);
 
         ui->horizontalLayout->addWidget(sidebar);
         ui->horizontalLayout->addWidget(content, 1);
-        ui->horizontalLayout->addWidget(details);
     }
     // The cat background
     {
