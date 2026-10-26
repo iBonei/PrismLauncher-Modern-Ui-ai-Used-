@@ -21,7 +21,7 @@
 #include <QStyledItemDelegate>
 
 class BasePage;
-const int pageIconSize = 24;
+const int pageIconSize = 21;
 
 class PageViewDelegate : public QStyledItemDelegate {
    public:
@@ -29,7 +29,7 @@ class PageViewDelegate : public QStyledItemDelegate {
     QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
     {
         QSize size = QStyledItemDelegate::sizeHint(option, index);
-        size.setHeight(qMax(size.height(), 32));
+        size.setHeight(qMax(size.height(), 48));
         return size;
     }
 };
