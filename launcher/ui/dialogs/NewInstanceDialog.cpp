@@ -104,7 +104,7 @@ NewInstanceDialog::NewInstanceDialog(const QString& initialGroup,
     m_buttons = new QDialogButtonBox(QDialogButtonBox::Help | QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
 
     m_container = new PageContainer(this, {}, this);
-    m_container->useSidebarStyle(false);
+    m_container->useSidebarStyle(true);
     m_container->setSizePolicy(QSizePolicy::Policy::Preferred, QSizePolicy::Policy::Expanding);
     m_container->layout()->setContentsMargins(0, 0, 0, 0);
     ui->verticalLayout->insertWidget(2, m_container);
@@ -119,7 +119,7 @@ NewInstanceDialog::NewInstanceDialog(const QString& initialGroup,
     auto* okButton = m_buttons->button(QDialogButtonBox::Ok);
     okButton->setDefault(true);
     okButton->setAutoDefault(true);
-    okButton->setText(tr("OK"));
+    okButton->setText(tr("Create instance"));
     connect(okButton, &QPushButton::clicked, this, &NewInstanceDialog::accept);
 
     auto* cancelButton = m_buttons->button(QDialogButtonBox::Cancel);
