@@ -553,6 +553,36 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
         quickActions->addWidget(makeDetailsButton(ui->actionEditInstance, QStringLiteral("modernDetailsButton")));
         quickActions->addWidget(makeDetailsButton(ui->actionViewSelectedInstFolder, QStringLiteral("modernDetailsButton")));
         actionLayout->addLayout(quickActions);
+        auto instanceShortcuts = new QHBoxLayout();
+        instanceShortcuts->setSpacing(8);
+        m_modernModsButton = new QToolButton(actionPanel);
+        m_modernModsButton->setObjectName(QStringLiteral("modernDetailsButton"));
+        m_modernModsButton->setText(tr("Mods"));
+        m_modernModsButton->setIcon(QIcon::fromTheme("folder-mods"));
+        m_modernModsButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+        m_modernModsButton->setMinimumHeight(39);
+        m_modernModsButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+        m_modernModsButton->setEnabled(false);
+        connect(m_modernModsButton, &QToolButton::clicked, this, [this] {
+            if (m_selectedInstance && m_selectedInstance->canEdit())
+                APPLICATION->showInstanceWindow(m_selectedInstance, QStringLiteral("mods"));
+        });
+        instanceShortcuts->addWidget(m_modernModsButton);
+
+        m_modernWorldsButton = new QToolButton(actionPanel);
+        m_modernWorldsButton->setObjectName(QStringLiteral("modernDetailsButton"));
+        m_modernWorldsButton->setText(tr("Worlds"));
+        m_modernWorldsButton->setIcon(QIcon::fromTheme("folder"));
+        m_modernWorldsButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+        m_modernWorldsButton->setMinimumHeight(39);
+        m_modernWorldsButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+        m_modernWorldsButton->setEnabled(false);
+        connect(m_modernWorldsButton, &QToolButton::clicked, this, [this] {
+            if (m_selectedInstance && m_selectedInstance->canEdit())
+                APPLICATION->showInstanceWindow(m_selectedInstance, QStringLiteral("worlds"));
+        });
+        instanceShortcuts->addWidget(m_modernWorldsButton);
+        actionLayout->addLayout(instanceShortcuts);
         actionLayout->addWidget(makeDetailsButton(ui->actionCopyInstance, QStringLiteral("modernDetailsButton")));
         actionLayout->addStretch();
         detailsLayout->addWidget(actionPanel);
@@ -2097,6 +2127,10 @@ void MainWindow::setInstanceActionsEnabled(bool enabled)
     ui->actionDeleteInstance->setEnabled(enabled);
     ui->actionCopyInstance->setEnabled(enabled);
     ui->actionCreateInstanceShortcut->setEnabled(enabled);
+    if (m_modernModsButton)
+        m_modernModsButton->setEnabled(enabled);
+    if (m_modernWorldsButton)
+        m_modernWorldsButton->setEnabled(enabled);
 }
 
 void MainWindow::refreshCurrentInstance()
