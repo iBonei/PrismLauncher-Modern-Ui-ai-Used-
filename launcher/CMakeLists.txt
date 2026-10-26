@@ -815,6 +815,7 @@ SET(LAUNCHER_SOURCES
     ui/GuiUtil.cpp
     ui/MainWindow.h
     ui/MainWindow.cpp
+    ui/qml/LauncherShell.qml
     ui/InstanceWindow.h
     ui/InstanceWindow.cpp
     ui/ViewLogWindow.h
@@ -1196,6 +1197,7 @@ if(WIN32)
 endif()
 
 qt_add_resources(LAUNCHER_RESOURCES
+    ui/qml/launcher_shell.qrc
     resources/backgrounds/backgrounds.qrc
     resources/multimc/multimc.qrc
     resources/pe_dark/pe_dark.qrc
@@ -1280,6 +1282,7 @@ target_link_libraries(Launcher_logic
     Qt${QT_VERSION_MAJOR}::Concurrent
     Qt${QT_VERSION_MAJOR}::Gui
     Qt${QT_VERSION_MAJOR}::Widgets
+    Qt${QT_VERSION_MAJOR}::QuickWidgets
     Qt${QT_VERSION_MAJOR}::NetworkAuth
     Qt${QT_VERSION_MAJOR}::OpenGL
     ${Launcher_QT_DBUS}
@@ -1491,7 +1494,7 @@ endif()
 # NOTE: it seems that this absolutely has to be here, and nowhere else.
 if(WIN32 OR (UNIX AND APPLE))
     if(WIN32)
-        set(QT_DEPLOY_TOOL_OPTIONS "--no-opengl-sw --no-quick-import --no-system-d3d-compiler --no-system-dxc-compiler --skip-plugin-types generic,networkinformation")
+        set(QT_DEPLOY_TOOL_OPTIONS "--no-opengl-sw --qmldir ${CMAKE_CURRENT_SOURCE_DIR}/ui/qml --no-system-d3d-compiler --no-system-dxc-compiler --skip-plugin-types generic,networkinformation")
     endif()
 
     qt_generate_deploy_script(
