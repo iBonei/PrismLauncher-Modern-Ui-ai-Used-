@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="/qml">
+    <file alias="LauncherShell.qml">LauncherShell.qml</file>
+  </qresource>
+</RCC>
