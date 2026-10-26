@@ -6,6 +6,7 @@ Rectangle {
     property string selectedId: prism.qmlSelectedId
     property var cards: prism.qmlInstances
     property string query: ""
+    property string workspacePage: "library"
     property var visibleCards: cards.filter(function(card) {
         return !query || card.name.toLowerCase().indexOf(query.toLowerCase()) >= 0
                || card.version.toLowerCase().indexOf(query.toLowerCase()) >= 0
@@ -16,7 +17,11 @@ Rectangle {
         return null
     }
 
-    function action(name) { prism.qmlAction(name) }
+    function action(name) {
+        if (name === "edit" && activeCard) { contextMenu.visible = false; workspacePage = "instance"; return }
+        if (name === "library") { workspacePage = "library"; return }
+        prism.qmlAction(name)
+    }
 
     Rectangle {
         id: rail
@@ -46,8 +51,8 @@ Rectangle {
                 required property var modelData
                 required property int index
                 x: 12; y: 138 + index * 57; width: rail.width - 24; height: 47; radius: 12
-                color: modelData.task === "library" ? "#203a4c" : hover.containsMouse ? "#1c2d40" : "transparent"
-                border.color: modelData.task === "library" ? "#3d6f88" : "transparent"
+                color: modelData.task === "library" && workspacePage === "library" ? "#203a4c" : hover.containsMouse ? "#1c2d40" : "transparent"
+                border.color: modelData.task === "library" && workspacePage === "library" ? "#3d6f88" : "transparent"
                 Text { x: 17; anchors.verticalCenter: parent.verticalCenter; text: modelData.glyph; color: "#a4dbe6"; font.pixelSize: 20 }
                 Text { x: 51; anchors.verticalCenter: parent.verticalCenter; text: modelData.label; color: "#ebf4fb"; font.pixelSize: 13; font.bold: modelData.task === "library" }
                 MouseArea { id: hover; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: shell.action(modelData.task) }
@@ -226,6 +231,94 @@ Rectangle {
                 Text { x: 17; anchors.verticalCenter: parent.verticalCenter; text: modelData.name; color: activeCard && modelData.id === "launch" ? "#08261d" : "#d8e8f5"; font.pixelSize: 13; font.bold: modelData.id === "launch" }
                 Text { anchors.right: parent.right; anchors.rightMargin: 15; anchors.verticalCenter: parent.verticalCenter; text: "›"; font.pixelSize: 23; color: activeCard && modelData.id === "launch" ? "#08261d" : "#7897a9" }
                 MouseArea { id: mouse; anchors.fill: parent; hoverEnabled: true; enabled: activeCard !== null; cursorShape: Qt.PointingHandCursor; onClicked: shell.action(modelData.id) }
+            }
+        }
+    }
+
+    Rectangle {
+        id: instanceWorkspace
+        visible: shell.workspacePage === "instance"
+        z: 20
+        anchors.left: rail.right
+        anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        color: "#090f19"
+        Flickable {
+            anchors.fill: parent
+            clip: true
+            contentHeight: dashboard.implicitHeight + 75
+            Column {
+                id: dashboard
+                x: 36; y: 29
+                width: instanceWorkspace.width - 72
+                spacing: 24
+                Rectangle {
+                    width: 158; height: 39; radius: 9; color: backHover.containsMouse ? "#244255" : "#182c3d"
+                    border.color: "#37576b"
+                    Text { anchors.centerIn: parent; text: "‹   Back to library"; color: "#d8f2fc"; font.pixelSize: 13 }
+                    MouseArea { id: backHover; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: shell.workspacePage = "library" }
+                }
+                Row {
+                    spacing: 21; height: 110
+                    Rectangle {
+                        width: 108; height: 108; radius: 18; color: "#1c3648"; border.color: "#395d72"
+                        Image { anchors.centerIn: parent; width: 80; height: 80; source: activeCard ? "image://prismicons/" + encodeURIComponent(activeCard.iconKey) : ""; fillMode: Image.PreserveAspectFit; smooth: false }
+                    }
+                    Column {
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 9
+                        Text { text: "INSTANCE WORKSPACE"; color: "#69c6d9"; font.bold: true; font.pixelSize: 11; font.letterSpacing: 1.5 }
+                        Text { text: activeCard ? activeCard.name : "Select an instance"; color: "#f6faff"; font.bold: true; font.pixelSize: 30 }
+                        Text { text: activeCard ? activeCard.version + "  •  " + (activeCard.running ? "Running" : "Ready to launch") : ""; color: "#9bb8ca"; font.pixelSize: 13 }
+                    }
+                }
+                Rectangle { width: parent.width; height: 1; color: "#263e50" }
+                Text { text: "Manage your instance"; color: "#f1faff"; font.bold: true; font.pixelSize: 23 }
+                Text { text: "Everything for this Minecraft profile, in one place."; color: "#8faec1"; font.pixelSize: 13 }
+                Grid {
+                    id: managementGrid
+                    width: parent.width
+                    spacing: 15
+                    columns: Math.max(1, Math.min(3, Math.floor((width + spacing) / 300)))
+                    Repeater {
+                        model: [
+                            { title: "Mods", desc: "Manage installed mods", glyph: "◇", task: "mods" },
+                            { title: "Worlds", desc: "Your Minecraft saves", glyph: "▧", task: "worlds" },
+                            { title: "Minecraft & loaders", desc: "Version components", glyph: "⬡", task: "components" },
+                            { title: "Java & memory", desc: "Runtime configuration", glyph: "⚙", task: "editLegacy" },
+                            { title: "Instance folder", desc: "Browse profile files", glyph: "▤", task: "folder" },
+                            { title: "Launch Minecraft", desc: "Start playing", glyph: "▶", task: "launch" }
+                        ]
+                        delegate: Rectangle {
+                            required property var modelData
+                            width: (managementGrid.width - (managementGrid.columns - 1) * managementGrid.spacing) / managementGrid.columns
+                            height: 148; radius: 16
+                            color: tileHover.containsMouse ? "#234253" : "#172b3c"
+                            border.color: tileHover.containsMouse ? "#67becb" : "#2d475a"
+                            Rectangle {
+                                x: 17; y: 17; width: 44; height: 44; radius: 11; color: "#295265"
+                                Text { anchors.centerIn: parent; text: modelData.glyph; font.pixelSize: 24; color: "#93e3e9" }
+                            }
+                            Text { x: 18; y: 79; width: parent.width - 36; elide: Text.ElideRight; text: modelData.title; color: "#f1f8ff"; font.pixelSize: 16; font.bold: true }
+                            Text { x: 18; y: 110; width: parent.width - 36; elide: Text.ElideRight; text: modelData.desc; color: "#93afc2"; font.pixelSize: 12 }
+                            MouseArea { id: tileHover; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: shell.action(modelData.task) }
+                        }
+                    }
+                }
+                Rectangle {
+                    width: parent.width; height: 95; radius: 14
+                    color: "#142738"; border.color: "#304e60"
+                    Text { x: 20; y: 18; text: "Advanced instance editor"; color: "#eff8ff"; font.bold: true; font.pixelSize: 15 }
+                    Text { x: 20; y: 49; width: parent.width - 215; wrapMode: Text.WordWrap; text: "Original Prism controls remain available as we redesign each editor."; color: "#9ab6c8"; font.pixelSize: 12 }
+                    Rectangle {
+                        width: 160; height: 41; radius: 10
+                        anchors.right: parent.right; anchors.rightMargin: 20; anchors.verticalCenter: parent.verticalCenter
+                        color: advancedHover.containsMouse ? "#69d9d5" : "#45c1c7"
+                        Text { anchors.centerIn: parent; text: "Open advanced editor"; color: "#09252d"; font.bold: true; font.pixelSize: 12 }
+                        MouseArea { id: advancedHover; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: shell.action("editLegacy") }
+                    }
+                }
             }
         }
     }
