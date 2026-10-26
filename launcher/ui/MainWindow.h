@@ -43,6 +43,7 @@
 #include <memory>
 
 #include <QMainWindow>
+#include <QVariant>
 #include <QProcess>
 #include <QTimer>
 
@@ -67,6 +68,8 @@ class MainWindow;
 }
 class MainWindow : public QMainWindow {
     Q_OBJECT
+    Q_PROPERTY(QVariantList qmlInstances READ qmlInstances NOTIFY qmlInstancesChanged)
+    Q_PROPERTY(QString qmlSelectedId READ qmlSelectedId NOTIFY qmlSelectionChanged)
 
    public:
     explicit MainWindow(QWidget* parent = 0);
@@ -82,8 +85,14 @@ class MainWindow : public QMainWindow {
 
     void processURLs(QList<QUrl> urls);
     void applyModernWindowState();
+    QVariantList qmlInstances() const;
+    QString qmlSelectedId() const;
+    Q_INVOKABLE void qmlSelectInstance(const QString& id);
+    Q_INVOKABLE void qmlAction(const QString& action);
    signals:
     void isClosing();
+    void qmlInstancesChanged();
+    void qmlSelectionChanged();
 
    protected:
     QMenu* createPopupMenu() override;
