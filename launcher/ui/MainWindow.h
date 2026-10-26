@@ -245,6 +245,8 @@ class MainWindow : public QMainWindow {
     QLabel* m_modernInstanceName = nullptr;
     QLabel* m_modernInstanceStatus = nullptr;
     QLabel* m_modernInstanceMeta = nullptr;
+    QToolButton* m_modernModsButton = nullptr;
+    QToolButton* m_modernWorldsButton = nullptr;
     LabeledToolButton* changeIconButton = nullptr;
     LabeledToolButton* renameButton = nullptr;
     QToolButton* helpMenuButton = nullptr;
