@@ -68,6 +68,7 @@
 #include <QQmlContext>
 #include <QQmlEngine>
 #include <QQuickImageProvider>
+#include <QResource>
 #include <QMenu>
 #include <QMenuBar>
 #include <QMessageBox>
@@ -172,6 +173,9 @@ class PrismInstanceIconProvider final : public QQuickImageProvider {
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
+    // QML resources live in Launcher_logic (a static library). Force the linker to
+    // retain and register this resource collection before QQuickWidget loads it.
+    Q_INIT_RESOURCE(launcher_shell);
     ui->setupUi(this);
 
     setWindowIcon(APPLICATION->logo());
