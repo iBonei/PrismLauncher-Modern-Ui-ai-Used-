@@ -799,6 +799,20 @@ QLineEdit:focus, QComboBox:focus, QSpinBox:focus, QDoubleSpinBox:focus {
     background: #15293e;
 }
 
+QPushButton#modernDangerButton {
+    background: #462833;
+    color: #ffd7de;
+    border: 1px solid #8c455b;
+    border-radius: 9px;
+    padding: 9px 16px;
+    font-weight: 700;
+}
+
+QPushButton#modernDangerButton:hover {
+    background: #633545;
+    border-color: #c66f87;
+}
+
 QToolTip {
     color: #f5f8fc;
     background: #172334;
