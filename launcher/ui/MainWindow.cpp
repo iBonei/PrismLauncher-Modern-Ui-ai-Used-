@@ -253,8 +253,8 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     auto sidebar = new QFrame(ui->centralWidget);
     sidebar->setObjectName(QStringLiteral("modernSidebar"));
-    sidebar->setMinimumWidth(176);
-    sidebar->setMaximumWidth(196);
+    sidebar->setMinimumWidth(212);
+    sidebar->setMaximumWidth(232);
 
     auto sidebarLayout = new QVBoxLayout(sidebar);
     sidebarLayout->setContentsMargins(14, 18, 14, 14);
@@ -288,7 +288,12 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     brandLayout->addWidget(brandText, 1);
     sidebarLayout->addWidget(brandRow);
-    sidebarLayout->addSpacing(12);
+    sidebarLayout->addSpacing(28);
+
+    auto navigationLabel = new QLabel(tr("WORKSPACE"), sidebar);
+    navigationLabel->setObjectName(QStringLiteral("modernSectionEyebrow"));
+    sidebarLayout->addWidget(navigationLabel);
+    sidebarLayout->addSpacing(5);
 
     auto makeSidebarButton = [sidebar](QAction* action, const QString& text) {
         auto button = new QToolButton(sidebar);
@@ -318,6 +323,10 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
     sidebarLayout->addWidget(makeSidebarButton(ui->actionManageAccounts, tr("Accounts")));
     sidebarLayout->addWidget(makeSidebarButton(ui->actionSettings, tr("Settings")));
     sidebarLayout->addWidget(makeSidebarButton(ui->actionOpenWiki, tr("Help")));
+    sidebarLayout->addSpacing(16);
+    auto toolsLabel = new QLabel(tr("QUICK ACCESS"), sidebar);
+    toolsLabel->setObjectName(QStringLiteral("modernSectionEyebrow"));
+    sidebarLayout->addWidget(toolsLabel);
     sidebarLayout->addStretch();
 
     auto foldersButton = new QToolButton(sidebar);
@@ -353,36 +362,75 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
     auto content = new QWidget(ui->centralWidget);
     content->setObjectName(QStringLiteral("modernContent"));
     auto contentLayout = new QVBoxLayout(content);
-    contentLayout->setContentsMargins(22, 18, 22, 14);
+    contentLayout->setContentsMargins(26, 24, 26, 20);
     contentLayout->setSpacing(14);
 
-    auto header = new QWidget(content);
-    header->setObjectName(QStringLiteral("modernHeader"));
-    auto headerLayout = new QHBoxLayout(header);
-    headerLayout->setContentsMargins(0, 0, 0, 0);
-    headerLayout->setSpacing(10);
+    // Library-first workspace: a distinct dashboard rather than Prism's old toolbar.
+    auto welcome = new QFrame(content);
+    welcome->setObjectName(QStringLiteral("modernWelcome"));
+    auto welcomeLayout = new QVBoxLayout(welcome);
+    welcomeLayout->setContentsMargins(26, 24, 26, 22);
+    welcomeLayout->setSpacing(9);
 
-    auto title = new QLabel(tr("Instances"), header);
-    title->setObjectName(QStringLiteral("modernPageTitle"));
-    headerLayout->addWidget(title);
+    auto welcomeEyebrow = new QLabel(tr("YOUR MINECRAFT WORKSPACE"), welcome);
+    welcomeEyebrow->setObjectName(QStringLiteral("modernWelcomeEyebrow"));
+    welcomeLayout->addWidget(welcomeEyebrow);
 
-    auto searchBox = new QLineEdit(header);
+    auto welcomeTitle = new QLabel(tr("Ready for your next adventure?"), welcome);
+    welcomeTitle->setObjectName(QStringLiteral("modernWelcomeTitle"));
+    welcomeTitle->setWordWrap(true);
+    welcomeLayout->addWidget(welcomeTitle);
+
+    auto welcomeSubtitle = new QLabel(tr("Launch a world, manage your modpacks, or start something new."), welcome);
+    welcomeSubtitle->setObjectName(QStringLiteral("modernWelcomeSubtitle"));
+    welcomeSubtitle->setWordWrap(true);
+    welcomeLayout->addWidget(welcomeSubtitle);
+
+    auto welcomeActions = new QHBoxLayout();
+    welcomeActions->setContentsMargins(0, 12, 0, 0);
+    welcomeActions->setSpacing(10);
+    auto createInstanceButton = new QToolButton(welcome);
+    createInstanceButton->setObjectName(QStringLiteral("modernPrimaryButton"));
+    createInstanceButton->setDefaultAction(ui->actionAddInstance);
+    createInstanceButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    createInstanceButton->setIconSize(QSize(18, 18));
+    createInstanceButton->setMinimumHeight(42);
+    welcomeActions->addWidget(createInstanceButton);
+    auto accountsShortcut = new QToolButton(welcome);
+    accountsShortcut->setObjectName(QStringLiteral("modernSecondaryButton"));
+    accountsShortcut->setDefaultAction(ui->actionManageAccounts);
+    accountsShortcut->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    accountsShortcut->setMinimumHeight(42);
+    welcomeActions->addWidget(accountsShortcut);
+    welcomeActions->addStretch();
+    welcomeLayout->addLayout(welcomeActions);
+    contentLayout->addWidget(welcome);
+
+    auto libraryHeader = new QWidget(content);
+    libraryHeader->setObjectName(QStringLiteral("modernHeader"));
+    auto libraryHeaderLayout = new QHBoxLayout(libraryHeader);
+    libraryHeaderLayout->setContentsMargins(0, 7, 0, 0);
+    libraryHeaderLayout->setSpacing(12);
+
+    auto libraryTitle = new QLabel(tr("Your library"), libraryHeader);
+    libraryTitle->setObjectName(QStringLiteral("modernPageTitle"));
+    libraryHeaderLayout->addWidget(libraryTitle);
+
+    libraryHeaderLayout->addStretch();
+
+    auto searchBox = new QLineEdit(libraryHeader);
     searchBox->setObjectName(QStringLiteral("modernSearchBox"));
-    searchBox->setPlaceholderText(tr("Search instances..."));
+    searchBox->setPlaceholderText(tr("Find an instance..."));
     searchBox->setClearButtonEnabled(true);
-    searchBox->setMinimumWidth(240);
-    searchBox->setMaximumWidth(460);
-    headerLayout->addWidget(searchBox, 1);
+    searchBox->setMinimumWidth(190);
+    searchBox->setMaximumWidth(340);
+    libraryHeaderLayout->addWidget(searchBox);
 
-    auto addButton = new QToolButton(header);
-    addButton->setObjectName(QStringLiteral("modernPrimaryButton"));
-    addButton->setDefaultAction(ui->actionAddInstance);
-    addButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    addButton->setIconSize(QSize(18, 18));
-    addButton->setMinimumHeight(38);
-    headerLayout->addWidget(addButton);
+    contentLayout->addWidget(libraryHeader);
 
-    contentLayout->addWidget(header);
+    auto libraryHint = new QLabel(tr("Your installed instances, organized just the way you like."), content);
+    libraryHint->setObjectName(QStringLiteral("modernLibraryHint"));
+    contentLayout->addWidget(libraryHint);
 
     // OSX magic.
     setUnifiedTitleAndToolBarOnMac(true);
@@ -473,8 +521,8 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
 
         auto details = new QFrame(ui->centralWidget);
         details->setObjectName(QStringLiteral("modernDetails"));
-        details->setMinimumWidth(240);
-        details->setMaximumWidth(285);
+        details->setMinimumWidth(264);
+        details->setMaximumWidth(306);
 
         auto detailsLayout = new QVBoxLayout(details);
         detailsLayout->setContentsMargins(16, 18, 16, 16);
@@ -483,6 +531,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
         auto detailsTitle = new QLabel(tr("Selected Instance"), details);
         detailsTitle->setObjectName(QStringLiteral("modernDetailsTitle"));
         detailsLayout->addWidget(detailsTitle);
+        detailsLayout->addSpacing(13);
 
         m_modernInstanceIcon = new QLabel(details);
         m_modernInstanceIcon->setObjectName(QStringLiteral("modernInstanceIcon"));
@@ -504,7 +553,11 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
         m_modernInstanceMeta->setObjectName(QStringLiteral("modernInstanceMeta"));
         m_modernInstanceMeta->setWordWrap(true);
         detailsLayout->addWidget(m_modernInstanceMeta);
-        detailsLayout->addSpacing(8);
+        detailsLayout->addSpacing(20);
+
+        auto actionsLabel = new QLabel(tr("INSTANCE ACTIONS"), details);
+        actionsLabel->setObjectName(QStringLiteral("modernSectionEyebrow"));
+        detailsLayout->addWidget(actionsLabel);
 
         auto makeDetailsButton = [details](QAction* action, const QString& objectName) {
             auto button = new QToolButton(details);
